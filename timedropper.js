@@ -77,7 +77,7 @@
 
 
             var
-                _td_init_deg = -1,
+                _td_init_deg = 0,
                 _td_event_deg = 0,
                 _td_wheel_deg = 0,
                 _td_h,
@@ -88,10 +88,10 @@
                         o = _td_c.find('.td-time span.on'),
                         v = parseInt(o.attr('data-id'));
 
-                    if (o.index() == 0) deg = Math.round((v * 360 / 23));
-                    else deg = Math.round((v * 360 / 59));
+                    if (o.index() == 0) deg = (v * 360 / 24);
+                    else deg = (v * 360 / 60);
 
-                    _td_init_deg = -1;
+                    _td_init_deg = 0;
                     _td_event_deg = deg;
                     _td_wheel_deg = deg;
 
@@ -104,10 +104,12 @@
 
                     if (!value) value = 0;
 
-                    var h = Math.round((deg * 23 / 360));
-                    var m = Math.round((deg * 59 / 360));
+                    var h = Math.floor((deg * 24 / 360));
+                    var m = Math.floor((deg * 60 / 360));
 
                     if (t.index() == 0) {
+
+                        if (h == 24) h = 0;
 
                         t.attr('data-id', _td_num(h));
 
@@ -130,6 +132,7 @@
                         t.text(_td_num(h));
 
                     } else {
+                        if (m == 60) m = 0;
                         t.attr('data-id', _td_num(m)).text(_td_num(m));
                     }
 
@@ -137,7 +140,7 @@
                     _td_c.find('.td-deg').css('transform', 'rotate(' + (deg) + 'deg)');
 
                     if (t.index() == 0) {
-                        var c = Math.round((h * 360 / 12));
+                        var c = (h * 360 / 12);
                         _td_c.find('.td-lancette div:last').css('transform', 'rotate(' + (c) + 'deg)');
                     } else {
                         _td_c.find('.td-lancette div:first').css('transform', 'rotate(' + (deg) + 'deg)');
@@ -147,14 +150,14 @@
                         _td_h = _td_c.find('.td-time span:first').attr('data-id'),
                         _td_m = _td_c.find('.td-time span:last').attr('data-id');
 
-                    if (Math.round(_td_h) >= 12 && Math.round(_td_h) < 24) {
+                    if (_td_h >= 12 && _td_h < 24) {
                         var
-                            h = Math.round(_td_h) - 12,
+                            h = _td_h - 12,
                             a = 'pm',
                             A = 'PM';
                     } else {
                         var
-                            h = Math.round(_td_h),
+                            h = _td_h,
                             a = 'am',
                             A = 'AM';
                     }
@@ -164,12 +167,12 @@
                     var
                         str =
                         _td_options.format
-                        .replace(/\b(H)\b/g, Math.round(_td_h))
-                        .replace(/\b(h)\b/g, Math.round(h))
-                        .replace(/\b(m)\b/g, Math.round(_td_m))
-                        .replace(/\b(HH)\b/g, _td_num(Math.round(_td_h)))
-                        .replace(/\b(hh)\b/g, _td_num(Math.round(h)))
-                        .replace(/\b(mm)\b/g, _td_num(Math.round(_td_m)))
+                        .replace(/\b(H)\b/g, _td_h)
+                        .replace(/\b(h)\b/g, h)
+                        .replace(/\b(m)\b/g, _td_m)
+                        .replace(/\b(HH)\b/g, _td_num(_td_h))
+                        .replace(/\b(hh)\b/g, _td_num(h))
+                        .replace(/\b(mm)\b/g, _td_num(_td_m))
                         .replace(/\b(a)\b/g, a)
                         .replace(/\b(A)\b/g, A);
 
@@ -192,10 +195,10 @@
 
                 var v = parseInt(o.attr('data-id'));
 
-                if (o.index() == 0) deg = Math.round((v * 360 / 23));
-                else deg = Math.round((v * 360 / 59));
+                if (o.index() == 0) deg = (v * 360 / 24);
+                else deg = (v * 360 / 60);
 
-                _td_init_deg = -1;
+                _td_init_deg = 0;
                 _td_event_deg = deg;
                 _td_wheel_deg = deg;
                 _td_rotation(deg);
@@ -239,7 +242,7 @@
                         if (deg < 0)
                             deg = 360 + deg;
 
-                        if (_td_init_deg == -1)
+                        if (_td_init_deg == 0)
                             _td_init_deg = deg;
 
                         tmp = Math.floor((deg - _td_init_deg) + _td_event_deg);
@@ -277,7 +280,7 @@
                         }
                     }
 
-                    _td_init_deg = -1;
+                    _td_init_deg = 0;
                     _td_event_deg = _td_wheel_deg;
                     _td_rotation(_td_wheel_deg);
 
@@ -354,13 +357,13 @@
                 _td_span_h.attr('data-id', h).text(h);
                 _td_span_m.attr('data-id', m).text(m);
 
-                _td_event_deg = Math.round((h * 360 / 23));
+                _td_event_deg = (h * 360 / 24);
 
-                _td_c.find('.td-lancette div:first').css('transform', 'rotate(' + Math.round((m * 360 / 59)) + 'deg)');
+                _td_c.find('.td-lancette div:first').css('transform', 'rotate(' + (m * 360 / 60) + 'deg)');
 
                 _td_rotation(_td_event_deg);
                 _td_wheel_deg = _td_event_deg;
-                _td_init_deg = -1;
+                _td_init_deg = 0;
 
 
             }
