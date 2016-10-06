@@ -1,13 +1,14 @@
 {
-  "name": "timedropper",
+  "name": "timedropper-ex",
   "main": [
     "./timedropper.css",
     "./timedropper.js"
   ],
   "version": "1.0",
-  "homepage": "https://github.com/felicegattuso/timedropper",
+  "homepage": "https://adam5wu.github.io/timedropper/",
   "authors": [
-    "Felice Gattuso"
+    "Felice Gattuso",
+    "Zhenyu Wu"
   ],
   "description": "timedropper jQuery time plugin",
   "keywords": [
