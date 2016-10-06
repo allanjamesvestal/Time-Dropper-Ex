@@ -602,7 +602,7 @@
 				});
 
 				if (_td_options.autoStart) {
-					_td_start();
+					setTimeout(_td_start.bind(this), 0);
 				}
 				return this;
 			}
