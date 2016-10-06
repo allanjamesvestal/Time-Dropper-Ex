@@ -231,15 +231,12 @@
 						var
 						fs = newhs % 60,
 						bs = 60 - fs;
-						if (fs < _td_options.stickyMinute) {
-							newhs -= fs;
-						} else if (bs < _td_options.stickyMinute) {
-							newhs -= fs - 60;
+						if ((fs < _td_options.stickyMinute) || (bs < _td_options.stickyMinute)) {
+							newhs = (newhs - fs + (fs < _td_options.stickyMinute ? 0 : 60)) % 3600;
+							deg = newhs * 360 / 3600;
 						}
-						if (newhs >= 3600) {
-							newhs = 0;
-							deg = 0;
-						}
+						if (deg == _td_m_deg)
+							return;
 					}
 
 					var
@@ -258,15 +255,12 @@
 						var
 						fs = newt % 3600,
 						bs = 3600 - fs;
-						if (fs < _td_options.stickyHour) {
-							newt -= fs;
-						} else if (bs < _td_options.stickyHour) {
-							newt -= fs - 3600;
+						if ((fs < _td_options.stickyHour) || (bs < _td_options.stickyHour)) {
+							newt = (newt - fs + (fs < _td_options.stickyHour ? 0 : 3600)) % (12 * 3600);
+							deg = newt * 360 / (12 * 3600);
 						}
-						if (newt >= 12 * 3600) {
-							newt = 0;
-							deg = 0;
-						}
+						if (deg == _td_h_deg)
+							return;
 					}
 
 					var
