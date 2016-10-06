@@ -157,7 +157,7 @@
 	height: 24px;
 	box-shadow: 0 0 10px #08C, inset 3px -5px 25px 1px #0DF;
 	border-radius: 100%;
-	top: -7px;
+	top: 0;
 	left: 50%;
 	margin-left: -12px;
 	border-bottom-left-radius: 0;
@@ -398,15 +398,6 @@
   50% { opacity: 0.5; }
 }
 
-.td-lancette,
-.td-lancette div {
-	position: absolute;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-}
-
 .td-lancette {
 	border: 2px solid #7AC;
 	border-radius: 100%;
@@ -414,7 +405,119 @@
 	opacity: 0.5;
 	box-shadow: 0 0 6px #39C, inset 0 0 32px 12px #003, inset 0 0 64px 16px #026;
 }
-.td-lancette div:after {
+.td-lancette,
+.td-lancette div.td-pointer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+.td-lancette div.td-tick {
+	position: absolute;
+	border: 1px solid #369;
+	box-shadow: 0 0 9px 1px #69C;
+}
+.td-lancette div.td-tick.td-rotate-0,
+.td-lancette div.td-tick.td-rotate-30 ,
+.td-lancette div.td-tick.td-rotate-60 ,
+.td-lancette div.td-tick.td-rotate-180 ,
+.td-lancette div.td-tick.td-rotate-210 ,
+.td-lancette div.td-tick.td-rotate-240 {
+	height: 3px;
+	width: 0;
+}
+
+.td-lancette div.td-tick.td-rotate-0,
+.td-lancette div.td-tick.td-rotate-180 {
+	height: 6px;
+}
+
+.td-lancette div.td-tick.td-rotate-90,
+.td-lancette div.td-tick.td-rotate-120 ,
+.td-lancette div.td-tick.td-rotate-150 ,
+.td-lancette div.td-tick.td-rotate-270 ,
+.td-lancette div.td-tick.td-rotate-300 ,
+.td-lancette div.td-tick.td-rotate-330 {
+	height: 0;
+	width: 3px;
+}
+
+.td-lancette div.td-tick.td-rotate-90,
+.td-lancette div.td-tick.td-rotate-270 {
+	width: 6px;
+}
+
+.td-lancette div.td-tick.td-rotate-0,
+.td-lancette div.td-tick.td-rotate-90,
+.td-lancette div.td-tick.td-rotate-180,
+.td-lancette div.td-tick.td-rotate-270 {
+	border-color: #69C;
+}
+
+.td-lancette div.td-tick.td-rotate-30,
+.td-lancette div.td-tick.td-rotate-120,
+.td-lancette div.td-tick.td-rotate-210,
+.td-lancette div.td-tick.td-rotate-300 {
+	transform: rotate(30deg);
+}
+
+.td-lancette div.td-tick.td-rotate-60,
+.td-lancette div.td-tick.td-rotate-150,
+.td-lancette div.td-tick.td-rotate-240,
+.td-lancette div.td-tick.td-rotate-330 {
+	transform: rotate(60deg);
+}
+
+.td-lancette div.td-tick.td-rotate-0 {
+	top: 0;
+	left: 50%;
+}
+.td-lancette div.td-tick.td-rotate-30 {
+	right: 25%;
+	top: 6.3%;
+}
+.td-lancette div.td-tick.td-rotate-60 {
+	right: 6.9%;
+	top: 25%;
+}
+.td-lancette div.td-tick.td-rotate-90 {
+	right: 0;
+	top: 50%;
+}
+.td-lancette div.td-tick.td-rotate-120 {
+	right: 6.3%;
+	bottom: 25%;
+}
+.td-lancette div.td-tick.td-rotate-150 {
+	right: 25%;
+	bottom: 6.9%;
+}
+.td-lancette div.td-tick.td-rotate-180 {
+	bottom: 0;
+	left: 50%;
+}
+.td-lancette div.td-tick.td-rotate-210 {
+	left: 25%;
+	bottom: 6.3%;
+}
+.td-lancette div.td-tick.td-rotate-240 {
+	left: 6.9%;
+	bottom: 25%;
+}
+.td-lancette div.td-tick.td-rotate-270 {
+	left: 0;
+	top: 50%;
+}
+.td-lancette div.td-tick.td-rotate-300 {
+	left: 6.3%;
+	top: 25%;
+}
+.td-lancette div.td-tick.td-rotate-330 {
+	left: 25%;
+	top: 6.9%;
+}
+.td-lancette div.td-pointer:after {
 	position: absolute;
 	top: 20px;
 	left: 50%;
@@ -425,12 +528,12 @@
 	background: #7AE;
 	content: "";
 }
-.td-lancette div:last-child:after {
+.td-lancette div.td-pointer.td-hr:after {
 	top: 36px;
 	margin-left: -2px;
 	width: 4px;
 }
-.td-lancette div.td-on:after {
+.td-lancette div.td-pointer.td-on:after {
 	background: #9FD;
 	animation: td-blink 1.5s linear infinite;
 }

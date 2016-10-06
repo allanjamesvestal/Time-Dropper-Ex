@@ -46,12 +46,13 @@
 						mousewheel : true,
 						setCurrentTime : true,
 						init_animation : "dropdown",
-						minutesInterval : 1,
 						showLancets : true,
 						dropTrigger : true,
 						startFromMinutes : false,
 						handleShake : false,
 						autoStart : false,
+						stickyMinute : 15,
+						stickyHour : 5 * 60,
 
 					}, options);
 
@@ -62,8 +63,20 @@
 					'<span class="td-pm td-n">PM</span>' +
 					'</div>' +
 					'<div class="td-lancette">' +
-					'<div class="td-min"></div>' +
-					'<div class="td-hr"></div>' +
+					'<div class="td-tick td-rotate-0"></div>' +
+					'<div class="td-tick td-rotate-30"></div>' +
+					'<div class="td-tick td-rotate-60"></div>' +
+					'<div class="td-tick td-rotate-90"></div>' +
+					'<div class="td-tick td-rotate-120"></div>' +
+					'<div class="td-tick td-rotate-150"></div>' +
+					'<div class="td-tick td-rotate-180"></div>' +
+					'<div class="td-tick td-rotate-210"></div>' +
+					'<div class="td-tick td-rotate-240"></div>' +
+					'<div class="td-tick td-rotate-270"></div>' +
+					'<div class="td-tick td-rotate-300"></div>' +
+					'<div class="td-tick td-rotate-330"></div>' +
+					'<div class="td-pointer td-hr"></div>' +
+					'<div class="td-pointer td-min"></div>' +
 					'</div>' +
 					'<div class="td-time">' +
 					'<span class="td-hr td-n2"></span>' +
@@ -124,7 +137,7 @@
 
 				_td_parseTime = function (str) {
 					var d = new Date();
-					var time = str.match(/^(\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?\s*(am|pm)?$/i);
+					var time = str.match(/^(\d\d)(?::(\d\d))?(?::(\d\d))?\s*(am|pm)?$/i);
 					if (!time)
 						return undefined;
 
@@ -183,7 +196,7 @@
 					_td_tags_lancet_hr.css('transform', 'rotate(' + _td_h_deg + 'deg)');
 					_td_tags_lancet_min.css('transform', 'rotate(' + _td_m_deg + 'deg)');
 
-					_td_tags_time_hr.attr('data-id', h).text(_td_num(_td_options.meridians ? h % 12 : h));
+					_td_tags_time_hr.attr('data-id', h).text(_td_num(_td_options.meridians ? (h > 12 ? h - 12 : h) : h));
 					_td_tags_time_min.attr('data-id', m).text(_td_num(m));
 
 					if (_td_options.meridians) {
@@ -212,18 +225,54 @@
 				_td_rotate_min = function (deg) {
 					var
 					hs = _td_time % 3600,
-					newhs = Math.round(deg * 3600 / 360),
+					newhs = Math.round(deg * 3600 / 360);
+
+					if (_td_options.stickyMinute > 1) {
+						var
+						fs = newhs % 60,
+						bs = 60 - fs;
+						if (fs < _td_options.stickyMinute) {
+							newhs -= fs;
+						} else if (bs < _td_options.stickyMinute) {
+							newhs -= fs - 60;
+						}
+						if (newhs >= 3600) {
+							newhs = 3600;
+							deg = 0;
+						}
+					}
+
+					var
 					fwddeg = (deg > _td_m_deg) ? (deg - _td_m_deg) : (_td_m_deg - deg),
 					epochhs = (fwddeg <= 180) ? 0 : (deg < _td_m_deg ? 3600 : -3600);
+
 					_td_settime(_td_time - hs + newhs + epochhs);
 				},
 
 				_td_rotate_hr = function (deg) {
 					var
 					pt = _td_time % (12 * 3600),
-					newt = Math.round(deg * 3600 * 12 / 360),
+					newt = Math.round(deg * 3600 * 12 / 360);
+
+					if (_td_options.stickyHour > 1) {
+						var
+						fs = newt % 3600,
+						bs = 3600 - fs;
+						if (fs < _td_options.stickyHour) {
+							newt -= fs;
+						} else if (bs < _td_options.stickyHour) {
+							newt -= fs - 3600;
+						}
+						if (newt >= 12 * 3600) {
+							newt = 0;
+							deg = 0;
+						}
+					}
+
+					var
 					fwddeg = (deg > _td_h_deg) ? (deg - _td_h_deg) : (_td_h_deg - deg),
 					epochhs = (fwddeg <= 180) ? 0 : (deg < _td_h_deg ? 12 * 3600 : -12 * 3600);
+
 					_td_settime(_td_time - pt + newt + epochhs);
 				};
 
@@ -339,7 +388,7 @@
 						_td_dailing = false;
 						_td_daildelay = setTimeout(function () {
 								_td_daildelay = null;
-							}, 300);
+							}, 100);
 
 						if (_td_options.autoSwitch) {
 							_td_select(_td_selector.hasClass('td-hr') ? _td_tags_time_min : _td_tags_time_hr);
@@ -418,6 +467,15 @@
 						}, 300);
 				};
 
+				if (!_td_options.visualContainer) {
+					$(window).on('resize', function () {
+						_td_container.css({
+							'top' : (_td_input.offset().top + _td_input.outerHeight() + (_td_options.dropTrigger ? 0 : 8)),
+							'left' : (_td_input.offset().left + (_td_input.outerWidth() / 2)) - (_td_container.outerWidth() / 2)
+						});
+					});
+				}
+
 				if (_td_options.dropTrigger) {
 					_td_input.click(function (e) {
 						if (!_td_container.hasClass('td-show')) {
@@ -437,12 +495,16 @@
 				return {
 					show : _td_start,
 					hide : _td_stop,
+					refocus : function () {
+						_td_select(_td_options.startFromMinutes ? _td_tags_time_min : _td_tags_time_hr);
+					},
 					defocus : function () {
 						_td_select(null);
 					},
 					setTime : function (str) {
 						var t = _td_parseTime(str);
 						if (t) {
+							_td_select(null);
 							_td_settime(t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds());
 						}
 						return t;
