@@ -2,14 +2,63 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>TimeDropper (Upstream)</title>
+	<title>TimeDropper</title>
+	<link rel="stylesheet" type="text/css" href="https://bootswatch.com/slate/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="timedropper.css">
 	<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
 	<script type="text/javascript" src="timedropper.js"></script>
 </head>
 <body>
-	<h1>TimeDropper (Upstream)</h1>
-	<input type="text" id="alarm" readonly=""  />
-	<script>$( "#alarm" ).timeDropper();</script>
+	<h1>TimeDropperEx</h1>
+	<div style="display:inline-block">No drop, two way entry<br>
+	<input type="text" id="clock1" />
+	</div>
+	<div style="display:inline-block">Auto start, fixed initial time<br>
+	<input type="text" id="clock2" readonly />
+	</div>
+	<div style="display:inline-block">Classic, initialize to current<br>
+	<input type="text" id="clock3" readonly />
+	</div>
+	
+	<script>
+	var clk1 = $("#clock1");
+	var td1 = clk1.timeDropper({
+		init_animation: 'fadein',
+		dropTrigger: false,
+		autoStart: true,
+		fetchTime: function() {
+			return clk1.val();
+		},
+		onUpdate: function(t,str) {
+			if (str != clk1.val()) {
+				clk1.val(str);
+				clk1.change();
+			}
+		}
+	});
+	clk1.keyup(function (){
+		td1.setTime(clk1.val());
+	});
+	var clk2 = $("#clock2");
+	clk2.timeDropper({
+		defaultTime: "10:10 AM",
+		autoStart: true,
+		onUpdate: function(t,str) {
+			if (str != clk2.val()) {
+				clk2.val(str);
+				clk2.change();
+			}
+		}
+	});
+	var clk3 = $("#clock3");
+	clk3.timeDropper({
+		onUpdate: function(t,str) {
+			if (str != clk3.val()) {
+				clk3.val(str);
+				clk3.change();
+			}
+		}
+	});
+	</script>
 </body>
 </html>

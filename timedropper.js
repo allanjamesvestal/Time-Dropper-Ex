@@ -2,460 +2,452 @@
 // Uses CommonJS, AMD or browser globals to create a jQuery plugin.
 
 (function (factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module. 
-        define(['jquery'], factory);
-    } else if (typeof module === 'object' && module.exports) {
-        // Node/CommonJS 
-        module.exports = function( root, jQuery ) {
-            if ( jQuery === undefined ) {
-                // require('jQuery') returns a factory that requires window to
-                // build a jQuery instance, we normalize how we use modules
-                // that require this pattern but the window provided is a noop
-                // if it's defined (how jquery works)
-                if ( typeof window !== 'undefined' ) {
-                    jQuery = require('jquery');
-                }
-                else {
-                    jQuery = require('jquery')(root);
-                }
-            }
-            factory(jQuery);
-            return jQuery;
-        };
-    } else {
-        // Browser globals 
-        factory(window.jQuery); // || window.Zepto ??
-    }
-}(function($) {
-    $.fn.timeDropper = function(options, callbackFnk) {
-        return $(this).each(function() {
+	if (typeof define === 'function' && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(['jquery'], factory);
+	} else if (typeof module === 'object' && module.exports) {
+		// Node/CommonJS
+		module.exports = function (root, jQuery) {
+			if (jQuery === undefined) {
+				// require('jQuery') returns a factory that requires window to
+				// build a jQuery instance, we normalize how we use modules
+				// that require this pattern but the window provided is a noop
+				// if it's defined (how jquery works)
+				if (typeof window !== 'undefined') {
+					jQuery = require('jquery');
+				} else {
+					jQuery = require('jquery')(root);
+				}
+			}
+			factory(jQuery);
+			return jQuery;
+		};
+	} else {
+		// Browser globals
+		factory(window.jQuery); // || window.Zepto ??
+	}
+}
+	(function ($) {
+		$.fn.extend({
+			timeDropper : function (options) {
+				var
+				_td_input = $(this),
+				_td_dailing = false,
+				_td_id = $('.td-clock').length,
+				_td_shake = null,
+				_td_daildelay = null;
 
-            var
-                _td_input = $(this),
-                _td_input_on = false,
-                _td_mobile = false,
-                _td_num = function(n) {
-                    return n < 10 ? '0' + n : n
-                },
-                _td_id = $('.td-clock').length,
-                _td_alert,
-                _td_event = null,
-                _td_options = $.extend({
+				var
+				_td_options = $.extend({
 
-                    format: 'h:mm a',
-                    autoswitch: false,
-                    meridians: false,
-                    mousewheel: false,
-                    setCurrentTime: true,
-                    init_animation: "fadein",
-                    primaryColor: "#1977CC",
-                    borderColor: "#1977CC",
-                    backgroundColor: "#FFF",
-                    textColor: '#555',
-					minutesInterval: 1,
-					showLancets: true,
-					startFromMinutes: false
+						format : 'hh:mm A',
+						autoSwitch : true,
+						meridians : true,
+						mousewheel : true,
+						setCurrentTime : true,
+						init_animation : "dropdown",
+						minutesInterval : 1,
+						showLancets : true,
+						dropTrigger : true,
+						startFromMinutes : false,
+						handleShake : false,
+						autoStart : false,
 
-                }, options);
+					}, options);
 
-            var _td_color = function(col, amt) {
+				(_td_options.visualContainer ? _td_options.visualContainer : $('body')).append(
+					'<div class="td-clock td-n2" id="td-clock-' + _td_id + '">' +
+					'<div class="td-medirian">' +
+					'<span class="td-am td-n">AM</span>' +
+					'<span class="td-pm td-n">PM</span>' +
+					'</div>' +
+					'<div class="td-lancette">' +
+					'<div class="td-min"></div>' +
+					'<div class="td-hr"></div>' +
+					'</div>' +
+					'<div class="td-time">' +
+					'<span class="td-hr td-n2"></span>' +
+					':' +
+					'<span class="td-min td-n2"></span>' +
+					'</div>' +
+					'<div class="td-dail td-n">' +
+					'<div class="td-handle td-bounce">' +
+					'<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"' +
+					'x="0px" y="0px" viewBox="0 0 100 35.4" enable-background="new 0 0 100 35.4" xml:space="preserve">' +
+					'<g>' +
+					'<path fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"' +
+					'stroke-miterlimit="10" d="M98.1,33C85.4,21.5,68.5,14.5,50,14.5S14.6,21.5,1.9,33"/>' +
+					'<line fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"' +
+					'stroke-miterlimit="10" x1="1.9" y1="33" x2="1.9" y2="28.6"/>' +
+					'<line fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"' +
+					'stroke-miterlimit="10" x1="1.9" y1="33" x2="6.3" y2="33"/>' +
+					'<line fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"' +
+					'stroke-miterlimit="10" x1="98.1" y1="33" x2="93.7" y2="33"/>' +
+					'<line fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"' +
+					'stroke-miterlimit="10" x1="98.1" y1="33" x2="98.1" y2="28.6"/>' +
+					'</g>' +
+					'</svg>' +
+					'</div>' +
+					'</div>' +
+					'</div>');
 
-                var usePound = false;
+				var
+				_td_container = $('#td-clock-' + _td_id),
+				_td_tags_lancets = _td_container.find('.td-lancette'),
+				_td_tags_lancet_hr = _td_tags_lancets.find('.td-hr'),
+				_td_tags_lancet_min = _td_tags_lancets.find('.td-min'),
+				_td_tags_hr = _td_container.find('.td-hr'),
+				_td_tags_min = _td_container.find('.td-min'),
+				_td_tags_dail = _td_container.find('.td-dail'),
+				_td_tags_dail_handle = _td_tags_dail.find('.td-handle'),
+				_td_tags_dail_rail = _td_tags_dail.find('svg'),
+				_td_tags_medirian = _td_container.find('.td-medirian'),
+				_td_tags_medirian_spans = _td_tags_medirian.find('span'),
+				_td_tags_medirian_am = _td_tags_medirian.find('.td-am'),
+				_td_tags_medirian_pm = _td_tags_medirian.find('.td-pm'),
+				_td_tags_time = _td_container.find('.td-time'),
+				_td_tags_time_spans = _td_tags_time.find('span'),
+				_td_tags_time_hr = _td_tags_time.find('.td-hr'),
+				_td_tags_time_min = _td_tags_time.find('.td-min');
 
-                if (col[0] == "#") {
-                    col = col.slice(1);
-                    usePound = true;
-                }
+				if (!_td_options.showLancets) {
+					_td_tags_lancets.attr('style', "display:none");
+				}
+				if (!_td_options.dropTrigger) {
+					_td_container.addClass('nodrop');
+				}
 
-                var num = parseInt(col, 16);
+				var
+				_td_num = function (n) {
+					return n < 10 ? '0' + n : n
+				},
 
-                var r = (num >> 16) + amt;
+				_td_parseTime = function (str) {
+					var d = new Date();
+					var time = str.match(/^(\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?\s*(am|pm)?$/i);
+					if (!time)
+						return undefined;
 
-                if (r > 255) r = 255;
-                else if (r < 0) r = 0;
+					d.setHours((parseInt(time[1]) || 0) + (time[4] ? (time[4].toUpperCase() == 'PM' ? 12 : 0) : 0),
+						parseInt(time[2]) || 0, parseInt(time[3]) || 0);
+					return d;
+				},
 
-                var b = ((num >> 8) & 0x00FF) + amt;
+				_td_formatTime = function (h, m, s) {
+					var
+					disp_h = h > 12 ? h - 12 : h;
+					disp_a = h > 12 ? 'pm' : 'am';
+					disp_s = s;
 
-                if (b > 255) b = 255;
-                else if (b < 0) b = 0;
+					return _td_options.format
+					.replace(/\b(HH)\b/g, _td_num(h))
+					.replace(/\b(hh)\b/g, _td_num(disp_h))
+					.replace(/\b(mm)\b/g, _td_num(m))
+					.replace(/\b(ss)\b/g, _td_num(disp_s))
+					.replace(/\b(H)\b/g, h)
+					.replace(/\b(h)\b/g, disp_h)
+					.replace(/\b(m)\b/g, m)
+					.replace(/\b(s)\b/g, disp_s)
+					.replace(/\b(A)\b/g, disp_a.toUpperCase())
+					.replace(/\b(a)\b/g, disp_a);
+				};
 
-                var g = (num & 0x0000FF) + amt;
+				var
+				_td_selector = null,
+				_td_time = 0,
+				_td_h_deg = 0,
+				_td_m_deg = 0,
+				_td_pm = false,
+				_td_select_deg = 0;
 
-                if (g > 255) g = 255;
-                else if (g < 0) g = 0;
+				var
+				_td_settime = function (t) {
+					if (_td_time == t)
+						return;
 
-                return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
+					_td_time = t % (24 * 3600);
+					if (_td_time < 0)
+						_td_time += 24 * 3600;
 
-            };
+					var
+					h = Math.floor(_td_time / 3600),
+					hs = _td_time % 3600,
+					m = Math.floor(hs / 60),
+					m_deg = hs * 360 / 3600,
+					h_deg = h * 360 / 12;
 
-            _td_input.prop({
-                'readonly': true
-            }).addClass('td-input');
+					_td_h_deg = h_deg % 360 + m_deg / 12;
+					_td_m_deg = m_deg;
+					_td_pm = h >= 12;
 
-            $('body').append('<div class="td-wrap td-n2" id="td-clock-' + _td_id + '"><div class="td-overlay"></div><div class="td-clock td-init"><div class="td-deg td-n"><div class="td-select"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 35.4" enable-background="new 0 0 100 35.4" xml:space="preserve"><g><path fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M98.1,33C85.4,21.5,68.5,14.5,50,14.5S14.6,21.5,1.9,33"/><line fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="1.9" y1="33" x2="1.9" y2="28.6"/><line fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="1.9" y1="33" x2="6.3" y2="33"/><line fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="98.1" y1="33" x2="93.7" y2="33"/><line fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="98.1" y1="33" x2="98.1" y2="28.6"/></g></svg></div></div><div class="td-medirian"><span class="td-icon-am td-n">AM</span><span class="td-icon-pm td-n">PM</span></div><div class="td-lancette"><div></div><div></div></div><div class="td-time">'+(_td_options.startFromMinutes?'<span></span>:<span class="on"></span>':'<span class="on"></span>:<span></span>')+'</div></div></div>');
+					_td_tags_lancet_hr.css('transform', 'rotate(' + _td_h_deg + 'deg)');
+					_td_tags_lancet_min.css('transform', 'rotate(' + _td_m_deg + 'deg)');
 
-            $('head').append('<style>#td-clock-' + _td_id + ' .td-clock {color:' + _td_options.textColor + ';background: ' + _td_options.backgroundColor + '; box-shadow: 0 0 0 1px ' + _td_options.borderColor + ',0 0 0 8px rgba(0, 0, 0, 0.05); } #td-clock-' + _td_id + ' .td-clock .td-time span.on { color:' + _td_options.primaryColor + '} #td-clock-' + _td_id + ' .td-clock:before { border-color: ' + _td_options.borderColor + '} #td-clock-' + _td_id + ' .td-select:after { box-shadow: 0 0 0 1px ' + _td_options.borderColor + ' } #td-clock-' + _td_id + ' .td-clock:before,#td-clock-' + _td_id + ' .td-select:after {background: ' + _td_options.backgroundColor + ';} ' + ( _td_options.showLancets ? (' #td-clock-' + _td_id + ' .td-lancette {border: 2px solid ' + _td_options.primaryColor + '; opacity:0.1}#td-clock-' + _td_id + ' .td-lancette div:after { background: ' + _td_options.primaryColor + ';}') : ('#td-clock-' + _td_id + ' .td-lancette {display:none;}' )) + ' #td-clock-' + _td_id + ' .td-bulletpoint div:after { background:' + _td_options.primaryColor + '; opacity:0.1}</style>');
+					_td_tags_time_hr.attr('data-id', h).text(_td_num(_td_options.meridians ? h % 12 : h));
+					_td_tags_time_min.attr('data-id', m).text(_td_num(m));
 
-
-
-            var
-                _td_container = $('#td-clock-' + _td_id),
-                _td_overlay = _td_container.find('.td-overlay'),
-                _td_c = _td_container.find('.td-clock');
-
-
-            _td_c.find('svg').attr('style', "stroke:" + _td_options.borderColor);
-
-
-            var
-                _td_init_deg = 0,
-                _td_event_deg = 0,
-                _td_wheel_deg = 0,
-                _td_h,
-                _td_m,
-                _td_define_deg = function() {
-
-                    var
-                        o = _td_c.find('.td-time span.on'),
-                        v = parseInt(o.attr('data-id'));
-
-                    if (o.index() == 0) deg = (v * 360 / 24);
-                    else deg = (v * 360 / 60);
-
-                    _td_init_deg = 0;
-                    _td_event_deg = deg;
-                    _td_wheel_deg = deg;
-
-                },
-                _td_rotation = function(deg) {
-
-                    var t = _td_c.find('.td-time span.on');
-
-                    var value = t.attr('data-id');
-
-                    if (!value) value = 0;
-					
-					var degMinutes = Math.floor(deg/(360/60*_td_options.minutesInterval))*360/60*_td_options.minutesInterval;
-					
-                    var h = Math.floor((deg * 24 / 360));
-                    var m = Math.floor((degMinutes * 60 / 360));
-
-                    if (t.index() == 0) {
-
-                        if (h == 24) h = 0;
-
-                        t.attr('data-id', _td_num(h));
-
-                        if (_td_options.meridians) {
-
-                            if (h >= 12 && h < 24) {
-                                _td_c.find('.td-icon-pm').addClass('td-on');
-                                _td_c.find('.td-icon-am').removeClass('td-on');
-                            } else {
-
-                                _td_c.find('.td-icon-am').addClass('td-on');
-                                _td_c.find('.td-icon-pm').removeClass('td-on');
-                            }
-
-                            if (h > 12) h = h - 12;
-                            if (h == 0) h = 12;
-
-                        }
-
-                        t.text(_td_num(h));
-
-                    } else {
-                        if (m == 60) m = 0;
-                        t.attr('data-id', _td_num(m)).text(_td_num(m));
-                    }
-
-                    _td_wheel_deg = deg;	
-
-					if(t.index() == 0){
-						_td_c.find('.td-deg').css('transform', 'rotate(' + (deg) + 'deg)');
-					}else{
-						_td_c.find('.td-deg').css('transform', 'rotate(' + (degMinutes) + 'deg)');
+					if (_td_options.meridians) {
+						if (_td_pm) {
+							_td_tags_medirian_am.removeClass('td-on');
+							_td_tags_medirian_pm.addClass('td-on');
+						} else {
+							_td_tags_medirian_am.addClass('td-on');
+							_td_tags_medirian_pm.removeClass('td-on');
+						}
 					}
-                    
 
-                    if (t.index() == 0) {
-                        var c = (h * 360 / 12);
-                        _td_c.find('.td-lancette div:last').css('transform', 'rotate(' + (c) + 'deg)');
-                    } else {
-                        _td_c.find('.td-lancette div:first').css('transform', 'rotate(' + (deg) + 'deg)');
-                    }
-
-                    var
-                        _td_h = _td_c.find('.td-time span:first').attr('data-id'),
-                        _td_m = _td_c.find('.td-time span:last').attr('data-id');
-
-                    if (_td_h >= 12 && _td_h < 24) {
-                        var
-                            h = _td_h - 12,
-                            a = 'pm',
-                            A = 'PM';
-                    } else {
-                        var
-                            h = _td_h,
-                            a = 'am',
-                            A = 'AM';
-                    }
-
-                    if (h == 0) h = 12;
-
-                    var
-                        str =
-                        _td_options.format
-                        .replace(/\b(H)\b/g, _td_h)
-                        .replace(/\b(h)\b/g, h)
-                        .replace(/\b(m)\b/g, _td_m)
-                        .replace(/\b(HH)\b/g, _td_num(_td_h))
-                        .replace(/\b(hh)\b/g, _td_num(h))
-                        .replace(/\b(mm)\b/g, _td_num(_td_m))
-                        .replace(/\b(a)\b/g, a)
-                        .replace(/\b(A)\b/g, A);
-
-                    _td_input.val(str);
-					_td_input.change();
-                };
-
-
-            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                _td_mobile = true;
-            }
-
-            _td_c.find('.td-time span').on('click', function(e) {
-
-                var o = $(this);
-
-                _td_c.find('.td-time span').removeClass('on');
-                o.addClass('on');
-
-                var v = parseInt(o.attr('data-id'));
-
-                if (o.index() == 0) deg = (v * 360 / 24);
-                else deg = (v * 360 / 60);
-
-                _td_init_deg = 0;
-                _td_event_deg = deg;
-                _td_wheel_deg = deg;
-                _td_rotation(deg);
-
-            });
-
-            _td_c.find('.td-deg').on('touchstart mousedown', function(e) {
-
-                _td_define_deg();
-
-                e.preventDefault();
-
-                clearInterval(_td_alert);
-
-                _td_c.find('.td-deg').removeClass('td-n');
-                _td_c.find('.td-select').removeClass('td-rubber');
-
-                _td_input_on = true;
-
-                var offset = _td_c.offset();
-                var center = {
-                    y: offset.top + _td_c.height() / 2,
-                    x: offset.left + _td_c.width() / 2
-                };
-
-                var a, b, deg, tmp, rad2deg = 180 / Math.PI;
-
-                _td_c.removeClass('td-rubber');
-
-                $(window).on('touchmove mousemove', function(e) {
-
-                    if (_td_input_on == true) {
-
-                        if (_td_mobile) move = e.originalEvent.touches[0];
-                        else move = e;
-
-                        a = center.y - move.pageY;
-                        b = center.x - move.pageX;
-                        deg = Math.atan2(a, b) * rad2deg;
-
-                        if (deg < 0)
-                            deg = 360 + deg;
-
-                        if (_td_init_deg == 0)
-                            _td_init_deg = deg;
-
-                        tmp = Math.floor((deg - _td_init_deg) + _td_event_deg);
-
-                        if (tmp < 0) tmp = 360 + tmp;
-                        else if (tmp > 360) tmp = tmp % 360;
-
-                        _td_rotation(tmp);
-
-                    }
-
-                });
-
-            });
-
-            if (_td_options.mousewheel) {
-
-                _td_c.on('mousewheel', function(e) {
-                    e.preventDefault();
-					 clearInterval(_td_alert);
-
-                    _td_c.find('.td-deg').removeClass('td-n');
-
-                    if (e.originalEvent.wheelDelta > 0) {
-                        if (_td_wheel_deg <= 360) {
-                            if (e.originalEvent.wheelDelta <= 120) _td_wheel_deg++
-                                else if (e.originalEvent.wheelDelta > 120) _td_wheel_deg = _td_wheel_deg + 20;
-                            if (_td_wheel_deg > 360) _td_wheel_deg = 0;
-                        }
-                    } else {
-                        if (_td_wheel_deg >= 0) {
-                            if (e.originalEvent.wheelDelta >= -120) _td_wheel_deg--
-                                else if (e.originalEvent.wheelDelta < -120) _td_wheel_deg = _td_wheel_deg - 20;
-                            if (_td_wheel_deg < 0) _td_wheel_deg = 360;
-                        }
-                    }
-
-                    _td_init_deg = 0;
-                    _td_event_deg = _td_wheel_deg;
-                    _td_rotation(_td_wheel_deg);
-
-                });
-
-            }
-
-            $(document).on('touchend mouseup', function() {
-
-                if (_td_input_on) {
-
-                    _td_input_on = false;
-
-                    if (_td_options.autoswitch) {
-                        _td_c.find('.td-time span').toggleClass('on');
-                        _td_c.find('.td-time span.on').click();
-                    }
-
-                    _td_c.find('.td-deg').addClass('td-n');
-                    _td_c.find('.td-select').addClass('td-rubber');
-
-                }
-
-            });
-
-            var _td_init = function(value) {
-
-                var
-                    d = new Date(),
-                    _td_span_h = _td_c.find('.td-time span:first'),
-                    _td_span_m = _td_c.find('.td-time span:last'),
-                    h,
-                    m;
-
-                if (_td_options.setCurrentTime) {
-
-                    var reg = /\d+/g,
-                        am;
-                    var st = _td_input.val().indexOf(':')>-1?_td_input.val().split(':'):null;
-
-                    if (st) {
-
-                        h = st[0].match(reg);
-                        m = st[1].match(reg);
-                        if (_td_input.val().indexOf("am") != -1 || _td_input.val().indexOf("AM") != -1 || _td_input.val().indexOf("pm") != -1 || _td_input.val().indexOf("PM") != -1) {
-                            if (_td_input.val().indexOf("am") != -1 || _td_input.val().indexOf("AM") != -1) am = true;
-                            else am = false;
-
-                            if (!am) {
-                                if (h < 13) {
-                                    h = parseInt(h) + 12;
-                                    if (h == 24) h = 0;
-                                }
-                            } else if (h == 12) h = 0;
-                        } else if (h == 24) h = 0;
-                    } else {
-
-                        if (!parseInt(_td_span_h.text())) h = _td_num(d.getHours());
-                        else h = _td_num(_td_span_h.text());
-                        if (!parseInt(_td_span_m.text())) m = _td_num(d.getMinutes());
-                        else m = _td_num(_td_span_m.text());
-
-                    }
-
-                } else {
-
-                    if (!parseInt(_td_span_h.text())) h = '00';
-                    else h = _td_num(_td_span_h.text());
-                    if (!parseInt(_td_span_m.text())) m = '00';
-                    else m = _td_num(_td_span_m.text());
-
-                }
-
-                _td_span_h.attr('data-id', h).text(h);
-                _td_span_m.attr('data-id', m).text(m);
-
-                _td_event_deg = (h * 360 / 24);
-
-                _td_c.find('.td-lancette div:first').css('transform', 'rotate(' + (m * 360 / 60) + 'deg)');
-
-                _td_rotation(_td_event_deg);
-                _td_wheel_deg = _td_event_deg;
-                _td_init_deg = 0;
-
-
-            }
-
-            _td_init();
-
-            _td_input.focus(function(e) {
-                e.preventDefault();
-                _td_input.blur();
-            });
-
-            _td_input.click(function(e) {
-
-                clearInterval(_td_event);
-
-                _td_container.removeClass('td-fadeout');
-                _td_container.addClass('td-show').addClass('td-' + _td_options.init_animation);
-                _td_c.css({
-                    'top': (_td_input.offset().top + (_td_input.outerHeight() - 8)),
-                    'left': (_td_input.offset().left + (_td_input.outerWidth() / 2)) - (_td_c.outerWidth() / 2)
-                });
-
-                if (_td_c.hasClass('td-init')) {
-
-                    _td_alert = setInterval(function() {
-                        _td_c.find('.td-select').addClass('td-alert');
-                        setTimeout(function() {
-                            _td_c.find('.td-select').removeClass('td-alert');
-                        }, 1000);
-                    }, 2000);
-
-                    _td_c.removeClass('td-init');
-
-                }
-
-            });
-            _td_overlay.click(function() {
-
-                _td_container.addClass('td-fadeout').removeClass('td-' + _td_options.init_animation);
-                _td_event = setTimeout(function() {
-                    _td_container.removeClass('td-show')
-                }, 300);
-
-            });
-            $(window).on('resize', function() {
-
-                _td_define_deg();
-                _td_c.css({
-                    'top': (_td_input.offset().top + (_td_input.outerHeight() - 8)),
-                    'left': (_td_input.offset().left + (_td_input.outerWidth() / 2)) - (_td_c.outerWidth() / 2)
-                });
-            });
-
-        });
-    };
-}))
+					if (_td_selector) {
+						if (_td_selector.hasClass('td-hr')) {
+							_td_tags_dail.css('transform', 'rotate(' + _td_h_deg + 'deg)');
+						} else {
+							_td_tags_dail.css('transform', 'rotate(' + _td_m_deg + 'deg)');
+						}
+					}
+
+					if (_td_options.onUpdate) {
+						_td_options.onUpdate(_td_time, _td_formatTime(h, m, hs % 60));
+					}
+				},
+
+				_td_rotate_min = function (deg) {
+					var
+					hs = _td_time % 3600,
+					newhs = Math.round(deg * 3600 / 360),
+					fwddeg = (deg > _td_m_deg) ? (deg - _td_m_deg) : (_td_m_deg - deg),
+					epochhs = (fwddeg <= 180) ? 0 : (deg < _td_m_deg ? 3600 : -3600);
+					_td_settime(_td_time - hs + newhs + epochhs);
+				},
+
+				_td_rotate_hr = function (deg) {
+					var
+					pt = _td_time % (12 * 3600),
+					newt = Math.round(deg * 3600 * 12 / 360),
+					fwddeg = (deg > _td_h_deg) ? (deg - _td_h_deg) : (_td_h_deg - deg),
+					epochhs = (fwddeg <= 180) ? 0 : (deg < _td_h_deg ? 12 * 3600 : -12 * 3600);
+					_td_settime(_td_time - pt + newt + epochhs);
+				};
+
+				var
+				_td_select = function (comp) {
+					_td_selector = comp;
+					if (_td_selector) {
+						if (_td_selector.hasClass('td-hr')) {
+							_td_tags_hr.addClass('td-on');
+							_td_tags_min.removeClass('td-on');
+							_td_select_deg = _td_h_deg;
+						} else {
+							_td_tags_hr.removeClass('td-on');
+							_td_tags_min.addClass('td-on');
+							_td_select_deg = _td_m_deg;
+						}
+						_td_tags_dail.addClass('active');
+
+						_td_tags_dail.css('transform', 'rotate(' + _td_select_deg + 'deg)');
+					} else {
+						_td_tags_hr.removeClass('td-on');
+						_td_tags_min.removeClass('td-on');
+						_td_tags_dail.removeClass('active');
+					}
+				};
+
+				_td_tags_time_spans.click(function (e) {
+					e.preventDefault();
+					e.stopPropagation();
+
+					_td_select($(this));
+				});
+
+				_td_container.click(function (e) {
+					if (_td_daildelay == null) {
+						_td_select(null);
+					}
+				});
+
+				if (_td_options.meridians) {
+					_td_tags_medirian_spans.click(function (e) {
+						_td_settime(_td_pm ? _td_time - 12 * 3600 : _td_time + 12 * 3600);
+					});
+				}
+
+				_td_tags_dail_rail.on('touchstart mousedown', function (e) {
+					if (_td_selector) {
+						e.preventDefault();
+						e.stopPropagation();
+
+						clearInterval(_td_shake);
+
+						_td_tags_dail.removeClass('td-n');
+						_td_tags_dail_handle.removeClass('td-bounce');
+						_td_tags_dail_handle.addClass('td-drag');
+
+						_td_dailing = true;
+
+						var offset = _td_container.offset();
+						var center = {
+							y : offset.top + _td_container.height() / 2,
+							x : offset.left + _td_container.width() / 2
+						};
+
+						var move = (e.type == 'touchstart') ? e.originalEvent.touches[0] : e;
+
+						var
+						rad2deg = 180 / Math.PI,
+						a = center.y - move.pageY,
+						b = center.x - move.pageX,
+						deg = Math.atan2(a, b) * rad2deg;
+
+						_td_init_deg = (deg < 0) ? 360 + deg : deg;
+
+						$(window).on('touchmove mousemove', function (e) {
+							if (_td_dailing) {
+								e.preventDefault();
+								e.stopPropagation();
+
+								move = (e.type == 'touchmove') ? e.originalEvent.touches[0] : e;
+
+								a = center.y - move.pageY,
+								b = center.x - move.pageX,
+								deg = Math.atan2(a, b) * rad2deg;
+								if (deg < 0) {
+									deg = 360 + deg;
+								}
+
+								var newdeg = (deg - _td_init_deg) + _td_select_deg;
+
+								if (newdeg < 0) {
+									newdeg = 360 + newdeg;
+								}
+								if (newdeg > 360) {
+									newdeg = newdeg - 360;
+								}
+
+								if (_td_selector.hasClass('td-hr')) {
+									_td_rotate_hr(newdeg);
+								} else {
+									_td_rotate_min(newdeg);
+								}
+							}
+						});
+					}
+				});
+
+				$(document).on('touchend mouseup', function (e) {
+					if (_td_dailing) {
+						e.preventDefault();
+						e.stopPropagation();
+
+						_td_dailing = false;
+						_td_daildelay = setTimeout(function () {
+								_td_daildelay = null;
+							}, 300);
+
+						if (_td_options.autoSwitch) {
+							_td_select(_td_selector.hasClass('td-hr') ? _td_tags_time_min : _td_tags_time_hr);
+						}
+						_td_tags_dail.addClass('td-n');
+						_td_tags_dail_handle.addClass('td-bounce');
+						_td_tags_dail_handle.removeClass('td-drag');
+					}
+				});
+
+				if (_td_options.mousewheel) {
+
+					_td_container.on('mousewheel', function (e) {
+						if (_td_selector) {
+							e.preventDefault();
+							clearInterval(_td_shake);
+
+							if (!_td_dailing) {
+								_td_tags_dail.removeClass('td-n');
+
+								_td_select_deg += e.originalEvent.wheelDelta / 120;
+								if (_td_select_deg < 0) {
+									_td_select_deg = 360 + _td_select_deg;
+								}
+								if (_td_select_deg > 360) {
+									_td_select_deg = _td_select_deg - 360;
+								}
+
+								if (_td_selector.hasClass('td-hr')) {
+									_td_rotate_hr(_td_select_deg);
+								} else {
+									_td_rotate_min(_td_select_deg);
+								}
+							}
+						}
+					});
+
+				}
+
+				var
+				_td_start = function (t) {
+					_td_container.removeClass('td-fadeout');
+					_td_container.addClass('td-show').addClass('td-' + _td_options.init_animation);
+
+					if (!_td_options.visualContainer) {
+						_td_container.css({
+							'top' : (_td_input.offset().top + _td_input.outerHeight() + (_td_options.dropTrigger ? 0 : 8)),
+							'left' : (_td_input.offset().left + (_td_input.outerWidth() / 2)) - (_td_container.outerWidth() / 2)
+						});
+					}
+
+					if (_td_options.handleShake) {
+						_td_shake = setInterval(function () {
+								_td_tags_dail_handle.addClass('td-alert');
+								setTimeout(function () {
+									_td_tags_dail_handle.removeClass('td-alert');
+								}, 1000);
+							}, 2000);
+					}
+
+					if (t == undefined) {
+						if (_td_options.fetchTime)
+							t = _td_parseTime(_td_options.fetchTime());
+					}
+
+					var starttime = t || _td_options.defaultTime ? _td_parseTime(_td_options.defaultTime) : new Date();
+					_td_settime(starttime.getHours() * 3600 + starttime.getMinutes() * 60 + starttime.getSeconds());
+
+					_td_select(_td_options.startFromMinutes ? _td_tags_time_min : _td_tags_time_hr);
+				},
+
+				_td_stop = function () {
+					_td_container.addClass('td-fadeout').removeClass('td-' + _td_options.init_animation);
+					_td_event = setTimeout(function () {
+							_td_container.removeClass('td-show')
+						}, 300);
+				};
+
+				if (_td_options.dropTrigger) {
+					_td_input.click(function (e) {
+						if (!_td_container.hasClass('td-show')) {
+							_td_start();
+						} else {
+							_td_stop();
+						}
+					});
+				}
+
+				if (_td_options.autoStart) {
+					_td_start();
+				}
+
+				_td_input.addClass('td-input');
+
+				return {
+					show : _td_start,
+					hide : _td_stop,
+					defocus : function () {
+						_td_select(null);
+					},
+					setTime : function (str) {
+						var t = _td_parseTime(str);
+						if (t) {
+							_td_settime(t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds());
+						}
+						return t;
+					},
+				};
+			}
+		});
+	}))
