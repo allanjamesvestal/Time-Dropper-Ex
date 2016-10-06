@@ -237,7 +237,7 @@
 							newhs -= fs - 60;
 						}
 						if (newhs >= 3600) {
-							newhs = 3600;
+							newhs = 0;
 							deg = 0;
 						}
 					}
