@@ -1,6 +1,12 @@
-# timedropper
-timedropper is a jQuery UI timepicker. Manage time input fields in a standard form. Focus on the input to open an small interactive timepicker.
+# TimeDropper-Ex
+[![Bower Version](https://img.shields.io/bower/v/timedropper-ex.svg?maxAge=3600)]()
+[![License](https://img.shields.io/github/license/Adam5Wu/timedropper-ex.svg?maxAge=2592000)]()
 
+TimeDropper-Ex is nearly complete rewrite of the original [TimeDropper](https://github.com/felicegattuso/timedropper).
+
+It incoporated [patches from many peer forks](https://github.com/Adam5Wu/timedropper/network),
+
+It improves visual and interactive control experiences, and is slightly more modularized for use without input control.
 
 [Usage and Examples](https://adam5wu.github.io/timedropper/)
 
