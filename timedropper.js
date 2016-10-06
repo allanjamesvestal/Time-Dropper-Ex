@@ -31,7 +31,7 @@
 		$.fn.extend({
 			timeDropper : function (options) {
 				var
-				_td_input = $(this),
+				_td_input = this,
 				_td_dailing = false,
 				_td_id = $('.td-clock').length,
 				_td_shake = null,
@@ -39,12 +39,19 @@
 
 				var
 				_td_options = $.extend({
-
 						format : 'hh:mm A',
+						fetchTime : function () {
+							return _td_input.val();
+						},
+						setTime : function (s) {
+							if (s != _td_input.val()) {
+								_td_input.val(s);
+								_td_input.change();
+							}
+						},
 						autoSwitch : true,
 						meridians : true,
 						mousewheel : true,
-						setCurrentTime : true,
 						animation : "drop",
 						showLancets : true,
 						dropTrigger : true,
@@ -53,7 +60,6 @@
 						autoStart : false,
 						stickyMinute : 15,
 						stickyHour : 5 * 60,
-
 					}, options);
 
 				(_td_options.visualContainer ? _td_options.visualContainer : $('body')).append(
@@ -218,9 +224,13 @@
 						}
 					}
 
-					if (_td_options.onUpdate) {
-						_td_options.onUpdate(_td_time, _td_formatTime(h, m, hs % 60));
-					}
+					var strtime = _td_formatTime(h, m, hs % 60);
+					_td_options.setTime(strtime);
+					_td_input.trigger('TDEx-update', {
+						dailing : _td_dailing,
+						selector : _td_selector ? (_td_selector.hasClass('td-hr') ? 'hr' : 'min') : null,
+						time : [_td_time, strtime],
+					});
 				},
 
 				_td_rotate_min = function (deg) {
@@ -293,31 +303,47 @@
 						_td_tags_min.removeClass('td-on');
 						_td_tags_dail.removeClass('active');
 					}
+
+					_td_input.trigger('TDEx-selector', {
+						selector : _td_selector ? (_td_selector.hasClass('td-hr') ? 'hr' : 'min') : null,
+					});
 				};
 
-				_td_tags_time_spans.click(function (e) {
+				var _td_event_click_select = function (e) {
 					e.preventDefault();
 					e.stopPropagation();
 
 					_td_select($(this));
-				});
+				};
+				_td_tags_time_spans.on('click', _td_event_click_select);
 
-				_td_container.click(function (e) {
+				var _td_event_click_deselect = function (e) {
 					if (_td_daildelay == null) {
 						_td_select(null);
 					}
-				});
+				};
+				_td_container.on('click', _td_event_click_deselect);
 
-				if (_td_options.meridians) {
-					_td_tags_medirian_spans.click(function (e) {
-						_td_settime(_td_pm ? _td_time - 12 * 3600 : _td_time + 12 * 3600);
+				var _td_event_click_meridians = function (e) {
+					_td_input.trigger('TDEx-meridian', {
+						clicked : _td_pm ? 'am' : 'pm',
 					});
+					_td_settime(_td_pm ? _td_time - 12 * 3600 : _td_time + 12 * 3600);
+				};
+				if (_td_options.meridians) {
+					_td_tags_medirian_spans.on('click', _td_event_click_meridians);
 				}
 
-				_td_tags_dail_rail.on('touchstart mousedown', function (e) {
+				var
+				_td_event_start_rail = function (e) {
 					if (_td_selector) {
 						e.preventDefault();
 						e.stopPropagation();
+
+						_td_input.trigger('TDEx-dailing', {
+							finish : false,
+							selector : (_td_selector.hasClass('td-hr') ? 'hr' : 'min'),
+						});
 
 						clearInterval(_td_shake);
 
@@ -343,103 +369,124 @@
 
 						_td_init_deg = (deg < 0) ? 360 + deg : deg;
 
-						$(window).on('touchmove mousemove', function (e) {
-							if (_td_dailing) {
-								e.preventDefault();
-								e.stopPropagation();
-
-								move = (e.type == 'touchmove') ? e.originalEvent.touches[0] : e;
-
-								a = center.y - move.pageY,
-								b = center.x - move.pageX,
-								deg = Math.atan2(a, b) * rad2deg;
-								if (deg < 0) {
-									deg = 360 + deg;
-								}
-
-								var newdeg = (deg - _td_init_deg) + _td_select_deg;
-
-								if (newdeg < 0) {
-									newdeg = 360 + newdeg;
-								}
-								if (newdeg > 360) {
-									newdeg = newdeg - 360;
-								}
-
-								if (_td_selector.hasClass('td-hr')) {
-									_td_rotate_hr(newdeg);
-								} else {
-									_td_rotate_min(newdeg);
-								}
-							}
-						});
-					}
-				});
-
-				$(document).on('touchend mouseup', function (e) {
-					if (_td_dailing) {
-						e.preventDefault();
-						e.stopPropagation();
-
-						_td_dailing = false;
-						_td_daildelay = setTimeout(function () {
-								_td_daildelay = null;
-							}, 100);
-
-						if (_td_options.autoSwitch) {
-							_td_select(_td_selector.hasClass('td-hr') ? _td_tags_time_min : _td_tags_time_hr);
-						}
-						_td_tags_dail.addClass('td-n');
-						_td_tags_dail_handle.addClass('td-bounce');
-						_td_tags_dail_handle.removeClass('td-drag');
-					}
-				});
-
-				if (_td_options.mousewheel) {
-
-					_td_container.on('mousewheel', function (e) {
-						if (_td_selector) {
+						var _td_event_move_rail = function (e) {
 							e.preventDefault();
-							clearInterval(_td_shake);
+							e.stopPropagation();
 
-							if (!_td_dailing) {
-								_td_tags_dail.removeClass('td-n');
+							move = (e.type == 'touchmove') ? e.originalEvent.touches[0] : e;
 
-								_td_select_deg += e.originalEvent.wheelDelta / 120;
-								if (_td_select_deg < 0) {
-									_td_select_deg = 360 + _td_select_deg;
-								}
-								if (_td_select_deg > 360) {
-									_td_select_deg = _td_select_deg - 360;
-								}
+							a = center.y - move.pageY,
+							b = center.x - move.pageX,
+							deg = Math.atan2(a, b) * rad2deg;
+							if (deg < 0) {
+								deg = 360 + deg;
+							}
 
-								if (_td_selector.hasClass('td-hr')) {
-									_td_rotate_hr(_td_select_deg);
-								} else {
-									_td_rotate_min(_td_select_deg);
-								}
+							var newdeg = (deg - _td_init_deg) + _td_select_deg;
+
+							if (newdeg < 0) {
+								newdeg = 360 + newdeg;
+							}
+							if (newdeg > 360) {
+								newdeg = newdeg - 360;
+							}
+
+							if (_td_selector.hasClass('td-hr')) {
+								_td_rotate_hr(newdeg);
+							} else {
+								_td_rotate_min(newdeg);
+							}
+						},
+						_td_event_stop_rail = function (e) {
+							e.preventDefault();
+							e.stopPropagation();
+
+							_td_dailing = false;
+							_td_daildelay = setTimeout(function () {
+									_td_daildelay = null;
+								}, 100);
+
+							if (_td_options.autoSwitch) {
+								_td_select(_td_selector.hasClass('td-hr') ? _td_tags_time_min : _td_tags_time_hr);
+							}
+							_td_tags_dail.addClass('td-n');
+							_td_tags_dail_handle.addClass('td-bounce');
+							_td_tags_dail_handle.removeClass('td-drag');
+
+							$(window).off('touchmove mousemove', _td_event_move_rail);
+							$(window).off('touchend mouseup', _td_event_stop_rail);
+
+							_td_input.trigger('TDEx-dailing', {
+								finish : true,
+								selector : (_td_selector.hasClass('td-hr') ? 'hr' : 'min'),
+							});
+						};
+
+						$(window).on('touchmove mousemove', _td_event_move_rail);
+						$(window).on('touchend mouseup', _td_event_stop_rail);
+					}
+				};
+				_td_tags_dail_rail.on('touchstart mousedown', _td_event_start_rail);
+
+				var _td_event_wheel = function (e) {
+					if (_td_selector) {
+						e.preventDefault();
+						clearInterval(_td_shake);
+
+						if (!_td_dailing) {
+							_td_tags_dail.removeClass('td-n');
+
+							_td_select_deg += e.originalEvent.wheelDelta / 120;
+							if (_td_select_deg < 0) {
+								_td_select_deg = 360 + _td_select_deg;
+							}
+							if (_td_select_deg > 360) {
+								_td_select_deg = _td_select_deg - 360;
+							}
+
+							if (_td_selector.hasClass('td-hr')) {
+								_td_rotate_hr(_td_select_deg);
+							} else {
+								_td_rotate_min(_td_select_deg);
 							}
 						}
-					});
-
+					}
+				};
+				if (_td_options.mousewheel) {
+					_td_container.on('mousewheel', _td_event_wheel);
 				}
 
 				var
 				_td_resetclock = function (t) {
-					_td_tags_lancet_ptr.addClass('td-n');
-					_td_settime(t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds());
-					setTimeout(function () {
-						_td_tags_lancet_ptr.removeClass('td-n');
-					}, 500);
+					var newt = t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds();
+					if (newt != _td_time) {
+						_td_tags_lancet_ptr.addClass('td-n');
+						_td_settime(t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds());
+						_td_input.trigger('TDEx-reset', {
+							sourceTime : t,
+						});
+						setTimeout(function () {
+							_td_tags_lancet_ptr.removeClass('td-n');
+						}, 500);
+					}
+				},
+				_td_reposition = function () {
+					_td_container.css({
+						'top' : (_td_input.offset().top + _td_input.outerHeight() + (_td_options.dropTrigger ? 0 : 8)),
+						'left' : (_td_input.offset().left + (_td_input.outerWidth() / 2)) - (_td_container.outerWidth() / 2)
+					});
+				},
+				_td_event_resize = function (e) {
+					_td_reposition();
 				},
 				_td_start = function (t) {
-					if (!_td_options.visualContainer) {
-						_td_container.css({
-							'top' : (_td_input.offset().top + _td_input.outerHeight() + (_td_options.dropTrigger ? 0 : 8)),
-							'left' : (_td_input.offset().left + (_td_input.outerWidth() / 2)) - (_td_container.outerWidth() / 2)
-						});
-					}
+					if (_td_container.hasClass('td-show'))
+						return;
 
+					if (!_td_options.visualContainer) {
+						_td_reposition();
+						$(window).on('resize', _td_event_resize);
+					}
 					_td_container.addClass('td-show')
 					.removeClass('td-' + _td_options.animation + 'out')
 					.addClass('td-' + _td_options.animation + 'in');
@@ -453,12 +500,7 @@
 							}, 2000);
 					}
 
-					if (t == undefined) {
-						if (_td_options.fetchTime)
-							t = _td_parseTime(_td_options.fetchTime());
-					}
-
-					_td_resetclock(t || _td_options.defaultTime ? _td_parseTime(_td_options.defaultTime) : new Date());
+					_td_resetclock(t || _td_parseTime(_td_options.fetchTime()) || new Date());
 
 					switch (_td_options.startFrom) {
 					case 'hr':
@@ -468,45 +510,47 @@
 						_td_select(_td_tags_time_min);
 						break;
 					}
+
+					_td_input.trigger('TDEx-show', {});
 				},
 				_td_stop = function () {
+					if (!_td_container.hasClass('td-show'))
+						return;
+
+					_td_input.trigger('TDEx-hide', {
+						visible : true
+					});
+
+					if (!_td_options.visualContainer) {
+						$(window).off('resize', _td_event_resize);
+					}
 					setTimeout(function () {
 						_td_select(null);
 						_td_container.removeClass('td-show')
+						_td_input.trigger('TDEx-hide', {
+							visible : false
+						});
 					}, 700);
 					_td_container
 					.addClass('td-' + _td_options.animation + 'out')
 					.removeClass('td-' + _td_options.animation + 'in');
 				};
 
-				if (!_td_options.visualContainer) {
-					$(window).on('resize', function () {
-						_td_container.css({
-							'top' : (_td_input.offset().top + _td_input.outerHeight() + (_td_options.dropTrigger ? 0 : 8)),
-							'left' : (_td_input.offset().left + (_td_input.outerWidth() / 2)) - (_td_container.outerWidth() / 2)
-						});
-					});
-				}
-
+				var _td_event_click_drop = function (e) {
+					if (!_td_container.hasClass('td-show')) {
+						_td_start();
+					} else {
+						_td_stop();
+					}
+				};
 				if (_td_options.dropTrigger) {
-					_td_input.click(function (e) {
-						if (!_td_container.hasClass('td-show')) {
-							_td_start();
-						} else {
-							_td_stop();
-						}
-					});
+					_td_input.on('click', _td_event_click_drop);
 				}
-
-				if (_td_options.autoStart) {
-					_td_start();
-				}
-
 				_td_input.addClass('td-input');
 
-				return {
-					show : _td_start,
-					hide : _td_stop,
+				_td_input.data('TDEx', {
+					show : _td_start.bind(this),
+					hide : _td_stop.bind(this),
 					refocus : function (selector) {
 						switch (selector) {
 						case 'hr':
@@ -520,6 +564,16 @@
 					defocus : function () {
 						_td_select(null);
 					},
+					getTime : function () {
+						var
+						h = Math.floor(_td_time / 3600),
+						hs = _td_time % 3600,
+						m = Math.floor(hs / 60);
+						return [_td_time, _td_formatTime(h, m, hs % 60)];
+					},
+					isDailing : function () {
+						return _td_dailing;
+					},
 					setTime : function (str) {
 						var t = _td_parseTime(str);
 						if (t) {
@@ -528,7 +582,29 @@
 						}
 						return t;
 					},
-				};
+					destroy : function () {
+						_td_input.trigger('TDEx-destroy', {});
+
+						_td_tags_time_spans.off('click', _td_event_click_select);
+						_td_container.off('click', _td_event_click_deselect);
+						if (_td_options.meridians) {
+							_td_tags_medirian_spans.off('click', _td_event_click_meridians);
+						}
+						if (_td_options.dropTrigger) {
+							_td_input.off('click', _td_event_click_drop);
+						}
+						_td_tags_dail_rail.off('touchstart mousedown', _td_event_start_rail);
+						if (_td_options.mousewheel) {
+							_td_container.off('mousewheel', _td_event_wheel);
+						}
+						_td_container.remove();
+					}
+				});
+
+				if (_td_options.autoStart) {
+					_td_start();
+				}
+				return this;
 			}
 		});
 	}))

@@ -23,43 +23,32 @@
 	</div>
 	
 	<script>
-	var clk1 = $("#clock1");
-	var td1 = clk1.timeDropper({
+	$("#clock1").timeDropper({
 		animation: 'fade',
 		dropTrigger: false,
 		autoStart: true,
-		fetchTime: function() {
-			return clk1.val();
-		},
-		onUpdate: function(t,str) {
-			if (str != clk1.val()) {
-				clk1.val(str);
-				clk1.change();
-			}
-		}
+	}).keyup(function (e){
+		$(this).data('TDEx').setTime($(this).val());
+	}).on('TDEx-dailing', function(e, data) {
+		$(this).css('background', data.finish?'white':'lime');
 	});
-	clk1.keyup(function (){
-		td1.setTime(clk1.val());
-	});
-	var clk2 = $("#clock2");
-	clk2.timeDropper({
+	$("#clock2").timeDropper({
 		animation: 'fade',
-		defaultTime: "10:10 AM",
-		autoStart: true,
-		onUpdate: function(t,str) {
-			if (str != clk2.val()) {
-				clk2.val(str);
-				clk2.change();
-			}
+		fetchTime: function() {
+			return "10:10 AM";
+		},
+		setTime: function() {},
+		autoStart: true
+	}).on('TDEx-update', function(e,data) {
+		$(this).val(data.dailing?'Dailing...'+data.selector:data.time[1]);
+	}).on('TDEx-dailing', function(e, data) {
+		if (data.finish) {
+			$(this).val($(this).data('TDEx').getTime()[1]);
 		}
 	});
-	var clk3 = $("#clock3");
-	clk3.timeDropper({
-		onUpdate: function(t,str) {
-			if (str != clk3.val()) {
-				clk3.val(str);
-				clk3.change();
-			}
+	$("#clock3").timeDropper({
+		fetchTime: function() {
+			return "";
 		}
 	});
 	</script>
