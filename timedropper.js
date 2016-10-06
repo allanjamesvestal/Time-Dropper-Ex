@@ -443,7 +443,7 @@
 					_td_container.addClass('td-show')
 					.removeClass('td-' + _td_options.animation + 'out')
 					.addClass('td-' + _td_options.animation + 'in');
-					
+
 					if (_td_options.handleShake) {
 						_td_shake = setInterval(function () {
 								_td_tags_dail_handle.addClass('td-alert');

@@ -352,8 +352,14 @@
 @-webkit-keyframes td-dropin {
 	0% {
 		opacity: 0;
-		-webkit-transform: perspective(200px) rotateX(45deg) translate3d(0, -24px, 0);
+		-webkit-transform: perspective(200px) rotateX(60deg) translate3d(0, -48px, -64px);
 	}
+	/*	
+	50% {
+		opacity: 0.5;
+		-webkit-transform: perspective(200px) rotateX(30deg) translate3d(0, -16px, -32px);
+	}
+	*/
 	100% {
 		opacity: 1;
 		-webkit-transform: none;
@@ -362,7 +368,15 @@
 @keyframes td-dropin {
 	0% {
 		opacity: 0;
-		transform: perspective(200px) rotateX(45deg) translate3d(0, -24px, 0);
+		transform: perspective(200px) rotateX(60deg) translate3d(0, -64px, -64px);
+	}
+	50% {
+		opacity: 0.5;
+		transform: perspective(350px) rotateX(30deg) translate3d(0, -18px, -32px);
+	}
+	75% {
+		opacity: 0.5;
+		transform: perspective(425px) rotateX(15deg) translate3d(0, -6px, -16px);
 	}
 	100% {
 		opacity: 1;
@@ -370,9 +384,10 @@
 	}
 }
 .td-dropin {
-	-webkit-animation: td-dropin .3s;
-	animation: td-dropin .3s;
-	perspective-origin: 75%, 50%;
+	-webkit-animation: td-dropin 0.3s linear;
+	animation: td-dropin 0.3s linear;
+	-webkit-transform-origin: 50% ;
+	transform-origin: 50% 0;
 }
 
 @-webkit-keyframes td-dropout {
@@ -382,7 +397,7 @@
 	}
 	100% {
 		opacity: 0;
-		-webkit-transform: perspective(100px) rotateX(45deg) translate3d(0, -24px, 0);
+		-webkit-transform: perspective(200px) rotateX(-45deg) translate3d(0, 32px, -48px);
 	}
 }
 @keyframes td-dropout {
@@ -392,13 +407,14 @@
 	}
 	100% {
 		opacity: 0;
-		transform: perspective(100px) rotateX(45deg) translate3d(0, -24px, 0);
+		transform: perspective(200px) rotateX(-45deg) translate3d(0, 32px, -48px);
 	}
 }
 .td-dropout {
 	-webkit-animation: td-dropout .3s forwards;
 	animation: td-dropout .3s forwards;
-	perspective-origin: 75%, 50%;
+	-webkit-transform-origin: 50% 50%;
+	transform-origin: 50% 50%;
 }
 
 @-webkit-keyframes td-blink {
