@@ -6,7 +6,7 @@
 		"Zhenyu Wu"
 	],
 	"homepage" : "https://adam5wu.github.io/timedropper/",
-	"description" : "timedropper jQuery time plugin",
+	"description" : "timedropper-ex jQuery time plugin",
 	"keywords" : [
 		"timedropper",
 		"timepicker"
@@ -22,9 +22,9 @@
 	"license" : "MIT",
 	"repository" : {
 		"type" : "git",
-		"url" : "https://github.com/Adam5Wu/timedropper.git"
+		"url" : "git://github.com/Adam5Wu/timedropper.git"
 	},
 	"dependencies" : {
-		"moment" : ">=2.8.1",
+		"moment" : ">=2.8.1"
 	}
 }
