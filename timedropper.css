@@ -352,7 +352,7 @@
 @-webkit-keyframes td-dropin {
 	0% {
 		opacity: 0;
-		-webkit-transform: translate3d(0, -100px, 0);
+		-webkit-transform: perspective(200px) rotateX(45deg) translate3d(0, -24px, 0);
 	}
 	100% {
 		opacity: 1;
@@ -362,7 +362,7 @@
 @keyframes td-dropin {
 	0% {
 		opacity: 0;
-		transform: translate3d(0, -10px, 0);
+		transform: perspective(200px) rotateX(45deg) translate3d(0, -24px, 0);
 	}
 	100% {
 		opacity: 1;
@@ -372,6 +372,7 @@
 .td-dropin {
 	-webkit-animation: td-dropin .3s;
 	animation: td-dropin .3s;
+	perspective-origin: 75%, 50%;
 }
 
 @-webkit-keyframes td-dropout {
@@ -381,7 +382,7 @@
 	}
 	100% {
 		opacity: 0;
-		-webkit-transform: translate3d(0, -100px, 0);
+		-webkit-transform: perspective(100px) rotateX(45deg) translate3d(0, -24px, 0);
 	}
 }
 @keyframes td-dropout {
@@ -391,12 +392,13 @@
 	}
 	100% {
 		opacity: 0;
-		transform: translate3d(0, -10px, 0);
+		transform: perspective(100px) rotateX(45deg) translate3d(0, -24px, 0);
 	}
 }
 .td-dropout {
 	-webkit-animation: td-dropout .3s forwards;
 	animation: td-dropout .3s forwards;
+	perspective-origin: 75%, 50%;
 }
 
 @-webkit-keyframes td-blink {

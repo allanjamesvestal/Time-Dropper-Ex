@@ -430,13 +430,9 @@
 					_td_settime(t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds());
 					setTimeout(function () {
 						_td_tags_lancet_ptr.removeClass('td-n');
-					}, 700);
+					}, 500);
 				},
 				_td_start = function (t) {
-					_td_container.addClass('td-show')
-					.removeClass('td-' + _td_options.animation + 'out')
-					.addClass('td-' + _td_options.animation + 'in');
-
 					if (!_td_options.visualContainer) {
 						_td_container.css({
 							'top' : (_td_input.offset().top + _td_input.outerHeight() + (_td_options.dropTrigger ? 0 : 8)),
@@ -444,6 +440,10 @@
 						});
 					}
 
+					_td_container.addClass('td-show')
+					.removeClass('td-' + _td_options.animation + 'out')
+					.addClass('td-' + _td_options.animation + 'in');
+					
 					if (_td_options.handleShake) {
 						_td_shake = setInterval(function () {
 								_td_tags_dail_handle.addClass('td-alert');
@@ -470,12 +470,13 @@
 					}
 				},
 				_td_stop = function () {
-					_td_select(null);
-					_td_container.addClass('td-' + _td_options.animation + 'out')
-					.removeClass('td-' + _td_options.animation + 'in');
 					setTimeout(function () {
+						_td_select(null);
 						_td_container.removeClass('td-show')
 					}, 700);
+					_td_container
+					.addClass('td-' + _td_options.animation + 'out')
+					.removeClass('td-' + _td_options.animation + 'in');
 				};
 
 				if (!_td_options.visualContainer) {
