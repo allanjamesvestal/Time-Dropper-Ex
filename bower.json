@@ -1,19 +1,30 @@
 {
-  "name": "timedropper-ex",
-  "main": [
-    "./timedropper.css",
-    "./timedropper.js"
-  ],
-  "version": "1.0",
-  "homepage": "https://adam5wu.github.io/timedropper/",
-  "authors": [
-    "Felice Gattuso",
-    "Zhenyu Wu"
-  ],
-  "description": "timedropper jQuery time plugin",
-  "keywords": [
-    "timedropper",
-    "timepicker"
-  ],
-  "license": "MIT"
+	"name" : "timedropper-ex",
+	"version" : "1.1",
+	"authors" : [
+		"Felice Gattuso",
+		"Zhenyu Wu"
+	],
+	"homepage" : "https://adam5wu.github.io/timedropper/",
+	"description" : "timedropper jQuery time plugin",
+	"keywords" : [
+		"timedropper",
+		"timepicker"
+	],
+	"main" : [
+		"./timedropper.css",
+		"./timedropper.js"
+	],
+	"moduleType" : [
+		"amd",
+		"globals"
+	],
+	"license" : "MIT",
+	"repository" : {
+		"type" : "git",
+		"url" : "https://github.com/Adam5Wu/timedropper.git"
+	},
+	"dependencies" : {
+		"moment" : ">=2.8.1",
+	}
 }
