@@ -6,9 +6,15 @@
 
 TimeDropper-Ex is nearly complete rewrite of the original [TimeDropper](https://github.com/felicegattuso/timedropper).
 
-It incoporated [patches from many peer forks](https://github.com/Adam5Wu/TimeDropper-Ex/network),
+It incoporated [patches from many peer forks](https://github.com/Adam5Wu/TimeDropper-Ex/network).
 
 It improves visual and interactive control experiences, and is slightly more modularized for use without input control.
+
+Confirmed working with:
+- Google Chrome 53
+- Mozilla Firefox 47
+- Microsoft Edge
+	- Does NOT work with Microsoft Internet Explorer
 
 [Usage and Examples](https://adam5wu.github.io/TimeDropper-Ex/)
 

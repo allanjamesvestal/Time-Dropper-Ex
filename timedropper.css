@@ -60,10 +60,17 @@
 	box-sizing: initial !important;
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
+.td-clock-wrap {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	overflow: hidden;
+}
 .td-clock svg {
 	stroke: #0CF;
 }
-
 .td-svg {
 	position: absolute;
 	top: 0;
@@ -77,23 +84,6 @@
 	left: 18px;
 	bottom: 18px;
 	right: 18px;
-}
-.td-dail {
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: 80%;
-	position: absolute;
-	z-index: 1;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	opacity: 0;
-}
-.td-dail.active {
-	opacity: 0.8;
-	animation: td-pulse 4s ease-in-out infinite;
 }
 .td-medirian {
 	position: absolute;
@@ -134,14 +124,20 @@
 	opacity: 1;
 	text-shadow: 0 0 16px #9AD;
 }
-.td-handle {
+.td-dail {
 	position: absolute;
-	top: 4px;
-	left: 32px;
-	right: 32px;
-	bottom: 22px;
+	z-index: 1;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	opacity: 0;
 }
-.td-handle svg {
+.td-dail.active {
+	opacity: 0.8;
+	animation: td-pulse 4s ease-in-out infinite;
+}
+.td-dail svg {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -150,7 +146,14 @@
 .td-dail.active svg {
 	cursor: pointer;
 }
-.td-handle:after {
+.td-dail .td-handle {
+	position: absolute;
+	top: 4px;
+	left: 32px;
+	right: 32px;
+	bottom: 22px;
+}
+.td-dail .td-handle:after {
 	position: absolute;
 	background: #234;
 	width: 24px;
@@ -207,6 +210,55 @@
 
 /* effects */
 
+@-webkit-keyframes td-bounce {
+	10% {
+		-webkit-transform: scale3d(1.1, 0.9, 1);
+	}
+	30% {
+		-webkit-transform: scale3d(0.93, 1.07, 1);
+	}
+	50% {
+		-webkit-transform: scale3d(1.05, 0.95, 1);
+	}
+	70% {
+		-webkit-transform: scale3d(.97, 1.03, 1);
+	}
+	90% {
+		-webkit-transform: scale3d(1.01, .99, 1);
+	}
+	100% {
+		-webkit-transform: scale3d(1, 1, 1);
+	}
+}
+@keyframes td-bounce {
+	10% {
+		transform: scale3d(1.1, 0.9, 1);
+	}
+	30% {
+		transform: scale3d(0.93, 1.07, 1);
+	}
+	50% {
+		transform: scale3d(1.05, 0.95, 1);
+	}
+	70% {
+		transform: scale3d(.97, 1.03, 1);
+	}
+	90% {
+		transform: scale3d(1.01, .99, 1);
+	}
+	100% {
+		transform: scale3d(1, 1, 1);
+	}
+}
+.td-drag {
+	-webkit-transform: scale3d(0.93, 1.07, 1);
+	transform: scale3d(0.93, 1.07, 1);
+}
+.td-bounce {
+	-webkit-animation: td-bounce .3s;
+	animation: td-bounce .3s;
+}
+
 @-webkit-keyframes td-alert {
 	0% {
 		-webkit-transform: scale3d(1, 1, 1);
@@ -256,55 +308,6 @@
 .td-alert {
 	-webkit-animation: td-alert .8s both;
 	animation: td-alert .8s both;
-}
-
-@-webkit-keyframes td-bounce {
-	10% {
-		-webkit-transform: scale3d(1.1, 0.9, 1);
-	}
-	30% {
-		-webkit-transform: scale3d(0.93, 1.07, 1);
-	}
-	50% {
-		-webkit-transform: scale3d(1.05, 0.95, 1);
-	}
-	70% {
-		-webkit-transform: scale3d(.97, 1.03, 1);
-	}
-	90% {
-		-webkit-transform: scale3d(1.01, .99, 1);
-	}
-	100% {
-		-webkit-transform: scale3d(1, 1, 1);
-	}
-}
-@keyframes td-bounce {
-	10% {
-		transform: scale3d(1.1, 0.9, 1);
-	}
-	30% {
-		transform: scale3d(0.93, 1.07, 1);
-	}
-	50% {
-		transform: scale3d(1.05, 0.95, 1);
-	}
-	70% {
-		transform: scale3d(.97, 1.03, 1);
-	}
-	90% {
-		transform: scale3d(1.01, .99, 1);
-	}
-	100% {
-		transform: scale3d(1, 1, 1);
-	}
-}
-.td-drag {
-	-webkit-transform: scale3d(0.93, 1.07, 1);
-	transform: scale3d(0.93, 1.07, 1);
-}
-.td-bounce {
-	-webkit-animation: td-bounce .3s;
-	animation: td-bounce .3s;
 }
 
 @-webkit-keyframes td-fadein {

@@ -59,11 +59,12 @@
 						handleShake : false,
 						autoStart : false,
 						stickyMinute : 15,
-						stickyHour : 5 * 60,
+						stickyHour : 5 * 60
 					}, options);
 
 				(_td_options.visualContainer ? _td_options.visualContainer : $('body')).append(
 					'<div class="td-clock" id="td-clock-' + _td_id + '">' +
+					'<div class="td-clock-wrap">' +
 					'<div class="td-medirian">' +
 					'<span class="td-am td-n2">AM</span>' +
 					'<span class="td-pm td-n2">PM</span>' +
@@ -90,7 +91,7 @@
 					'<span class="td-min td-n2"></span>' +
 					'</div>' +
 					'<div class="td-dail td-n">' +
-					'<div class="td-handle td-bounce">' +
+					'<div class="td-handle">' +
 					'<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"' +
 					'x="0px" y="0px" viewBox="0 0 100 35.4" enable-background="new 0 0 100 35.4" xml:space="preserve">' +
 					'<g>' +
@@ -106,6 +107,7 @@
 					'stroke-miterlimit="10" x1="98.1" y1="33" x2="98.1" y2="28.6"/>' +
 					'</g>' +
 					'</svg>' +
+					'</div>' +
 					'</div>' +
 					'</div>' +
 					'</div>');
@@ -229,7 +231,7 @@
 					_td_input.trigger('TDEx-update', {
 						dailing : _td_dailing,
 						selector : _td_selector ? (_td_selector.hasClass('td-hr') ? 'hr' : 'min') : null,
-						time : [_td_time, strtime],
+						time : [_td_time, strtime]
 					});
 				},
 
@@ -305,7 +307,7 @@
 					}
 
 					_td_input.trigger('TDEx-selector', {
-						selector : _td_selector ? (_td_selector.hasClass('td-hr') ? 'hr' : 'min') : null,
+						selector : _td_selector ? (_td_selector.hasClass('td-hr') ? 'hr' : 'min') : null
 					});
 				};
 
@@ -326,7 +328,7 @@
 
 				var _td_event_click_meridians = function (e) {
 					_td_input.trigger('TDEx-meridian', {
-						clicked : _td_pm ? 'am' : 'pm',
+						clicked : _td_pm ? 'am' : 'pm'
 					});
 					_td_settime(_td_pm ? _td_time - 12 * 3600 : _td_time + 12 * 3600);
 				};
@@ -342,7 +344,7 @@
 
 						_td_input.trigger('TDEx-dailing', {
 							finish : false,
-							selector : (_td_selector.hasClass('td-hr') ? 'hr' : 'min'),
+							selector : (_td_selector.hasClass('td-hr') ? 'hr' : 'min')
 						});
 
 						clearInterval(_td_shake);
@@ -418,7 +420,7 @@
 
 							_td_input.trigger('TDEx-dailing', {
 								finish : true,
-								selector : (_td_selector.hasClass('td-hr') ? 'hr' : 'min'),
+								selector : (_td_selector.hasClass('td-hr') ? 'hr' : 'min')
 							});
 						};
 
@@ -463,7 +465,7 @@
 						_td_tags_lancet_ptr.addClass('td-n');
 						_td_settime(t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds());
 						_td_input.trigger('TDEx-reset', {
-							sourceTime : t,
+							sourceTime : t
 						});
 						setTimeout(function () {
 							_td_tags_lancet_ptr.removeClass('td-n');
