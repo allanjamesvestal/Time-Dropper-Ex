@@ -25,11 +25,11 @@
 	background-repeat: no-repeat;
 	background-size: cover;
 	
-	color: #48C;
+	color: #39D;
 	font-size: 16px;
-	text-shadow: 0 0 5px #ACF;
-	background-color: white;
-	box-shadow: 0 0 0 1px #1977CC, 0 0 0 8px rgba(0, 127, 255, 0.05);
+	text-shadow: 0 0 5px #369;
+	background-color: #123;
+	box-shadow: 0 0 0 1px #0AF,0 0 8px 3px rgba(0,127,255,0.5);
 }
 .td-clock:before
 {
@@ -41,9 +41,9 @@
 	width: 20px;
 	height: 20px;
 	transform: rotate(45deg);
-	background: white;
-	border-left: 1px solid #1977CC;
-	border-top: 1px solid #1977CC;
+	background: #123;
+	border-left: 1px solid #0AF;
+	border-top: 1px solid #0AF;
 	border-top-left-radius: 4px;
 }
 .td-clock.nodrop:before
@@ -76,7 +76,7 @@
 }
 .td-clock svg
 {
-	stroke: #9CE;
+	stroke: #0CF;
 }
 .td-svg
 {
@@ -116,7 +116,7 @@
 	font-size: 1em;
 	opacity: 0;
 	font-weight: bold;
-	color: #8AC;
+	color: silver;
 	cursor: pointer;
 }
 .td-medirian .td-am,
@@ -136,7 +136,7 @@
 .td-medirian .td-pm.td-on
 {
 	left: 50%;
-	opacity: 0.9;
+	opacity: 0.8;
 }
 .td-medirian .td-now
 {
@@ -148,7 +148,7 @@
 .td-medirian .td-now.td-on
 {
 	bottom: 18%;
-	opacity: 0.5;
+	opacity: 0.3;
 	z-index: 2;
 }
 .td-medirian .td-on
@@ -158,7 +158,7 @@
 .td-medirian .td-on:hover
 {
 	opacity: 1;
-	text-shadow: 0 0 8px #9CE;
+	text-shadow: 0 0 16px #9AD;
 }
 .td-dail
 {
@@ -197,10 +197,10 @@
 .td-dail .td-handle:after
 {
 	position: absolute;
-	background: #6AC;
+	background: #234;
 	width: 24px;
 	height: 24px;
-	box-shadow: inset -3px 5px 25px 1px #DEF;
+	box-shadow: 0 0 10px #08C,inset 3px -5px 25px 1px #0DF;
 	border-radius: 100%;
 	top: 0;
 	left: 50%;
@@ -228,17 +228,17 @@
 }
 .td-clock .td-time span:hover{
 	opacity: 1;
-	text-shadow: 0 0 16px #9CF;
+	text-shadow: 0 0 24px #6AF;
 }
 .td-clock .td-time span.td-on
 {
-	color: #6AE;
-	text-shadow: 0 0 5px #ACF;
+	color: #8CF;
+	text-shadow: 0 0 5px #257;
 	animation: td-blink 1.5s linear infinite;
 }
 .td-clock .td-time span.td-on:hover{
 	opacity: 1;
-	text-shadow: 0 0 16px #9CF;
+	text-shadow: 0 0 24px #ACE;
 }
 .td-n
 {
@@ -556,7 +556,7 @@
 	border-radius: 100%;
 	margin: 8px;
 	opacity: 0.5;
-	box-shadow: 0 0 6px 1px #6CF,inset 0 0 32px 12px white,inset 0 0 64px 16px #DEF;
+	box-shadow: 0 0 6px #39C,inset 0 0 32px 12px #003,inset 0 0 64px 16px #026;
 }
 .td-lancette,
 .td-lancette div.td-pointer
@@ -571,6 +571,7 @@
 {
 	position: absolute;
 	border: 1px solid #369;
+	box-shadow: 0 0 9px 1px #69C;
 }
 .td-lancette div.td-tick.td-rotate-0,
 .td-lancette div.td-tick.td-rotate-30 ,
@@ -703,6 +704,6 @@
 }
 .td-lancette div.td-pointer.td-on:after
 {
-	background: #3C8;
+	background: #9FD;
 	animation: td-blink 1.5s linear infinite;
 }

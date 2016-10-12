@@ -35,6 +35,7 @@
 				_td_dailing = false,
 				_td_id = $('.td-clock').length,
 				_td_shake = null,
+				_td_now = null,
 				_td_daildelay = null;
 
 				var
@@ -58,8 +59,8 @@
 						startFrom : "hr",
 						handleShake : false,
 						autoStart : false,
-						stickyMinute : 15,
-						stickyHour : 5 * 60
+						stickyMinute : 20,
+						stickyHour : 8 * 60
 					}, options);
 
 				(_td_options.visualContainer ? _td_options.visualContainer : $('body')).append(
@@ -68,6 +69,7 @@
 					'<div class="td-medirian">' +
 					'<span class="td-am td-n2">AM</span>' +
 					'<span class="td-pm td-n2">PM</span>' +
+					'<span class="td-now td-n2 td-on">Reset</span>' +
 					'</div>' +
 					'<div class="td-lancette">' +
 					'<div class="td-tick td-rotate-0"></div>' +
@@ -127,6 +129,7 @@
 				_td_tags_medirian_spans = _td_tags_medirian.find('span'),
 				_td_tags_medirian_am = _td_tags_medirian.find('.td-am'),
 				_td_tags_medirian_pm = _td_tags_medirian.find('.td-pm'),
+				_td_tags_medirian_now = _td_tags_medirian.find('.td-now'),
 				_td_tags_time = _td_container.find('.td-time'),
 				_td_tags_time_spans = _td_tags_time.find('span'),
 				_td_tags_time_hr = _td_tags_time.find('.td-hr'),
@@ -183,7 +186,7 @@
 				_td_select_deg = 0;
 
 				var
-				_td_settime = function (t) {
+				_td_settime = function (t, isNow) {
 					if (_td_time == t)
 						return;
 
@@ -231,8 +234,15 @@
 					_td_input.trigger('TDEx-update', {
 						dailing : _td_dailing,
 						selector : _td_selector ? (_td_selector.hasClass('td-hr') ? 'hr' : 'min') : null,
+						now : isNow,
 						time : [_td_time, strtime]
 					});
+
+					if (!isNow && _td_now) {
+						clearInterval(_td_now);
+						_td_now = null;
+						_td_tags_medirian_now.addClass('td-on');
+					}
 				},
 
 				_td_rotate_min = function (deg) {
@@ -326,14 +336,22 @@
 				};
 				_td_container.on('click', _td_event_click_deselect);
 
-				var _td_event_click_meridians = function (e) {
+				var _td_event_click_meridian_ampm = function (e) {
 					_td_input.trigger('TDEx-meridian', {
 						clicked : _td_pm ? 'am' : 'pm'
 					});
 					_td_settime(_td_pm ? _td_time - 12 * 3600 : _td_time + 12 * 3600);
 				};
+				var _td_event_click_meridian_now = function (e) {
+					_td_input.trigger('TDEx-meridian', {
+						clicked : 'now'
+					});
+					_td_resetclock(null);
+				};
 				if (_td_options.meridians) {
-					_td_tags_medirian_spans.on('click', _td_event_click_meridians);
+					_td_tags_medirian_am.on('click', _td_event_click_meridian_ampm);
+					_td_tags_medirian_pm.on('click', _td_event_click_meridian_ampm);
+					_td_tags_medirian_now.on('click', _td_event_click_meridian_now);
 				}
 
 				var
@@ -347,7 +365,10 @@
 							selector : (_td_selector.hasClass('td-hr') ? 'hr' : 'min')
 						});
 
-						clearInterval(_td_shake);
+						if (_td_shake) {
+							clearInterval(_td_shake);
+							_td_shake = null;
+						}
 
 						_td_tags_dail.removeClass('td-n');
 						_td_tags_dail_handle.removeClass('td-bounce');
@@ -433,7 +454,12 @@
 				var _td_event_wheel = function (e) {
 					if (_td_selector) {
 						e.preventDefault();
-						clearInterval(_td_shake);
+						e.stopPropagation();
+
+						if (_td_shake) {
+							clearInterval(_td_shake);
+							_td_shake = null;
+						}
 
 						if (!_td_dailing) {
 							_td_tags_dail.removeClass('td-n');
@@ -460,10 +486,34 @@
 
 				var
 				_td_resetclock = function (t) {
-					var newt = t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds();
+					var newt;
+					if (t) {
+						if (_td_now) {
+							clearInterval(_td_now);
+							_td_now = null;
+							_td_tags_medirian_now.addClass('td-on');
+						}
+
+						newt = t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds();
+					} else {
+						if (_td_now)
+							return;
+
+						_td_now = setInterval(function () {
+								now = new Date();
+								newt = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+								_td_settime(newt, true);
+							}, 500);
+						_td_tags_medirian_now.removeClass('td-on');
+
+						var now = new Date();
+						newt = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+					}
+
 					if (newt != _td_time) {
 						_td_tags_lancet_ptr.addClass('td-n');
-						_td_settime(t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds());
+						_td_settime(newt, _td_now !== null);
 						_td_input.trigger('TDEx-reset', {
 							sourceTime : t
 						});
@@ -502,7 +552,7 @@
 							}, 2000);
 					}
 
-					_td_resetclock(t || _td_parseTime(_td_options.fetchTime()) || new Date());
+					_td_resetclock(t || _td_parseTime(_td_options.fetchTime()));
 
 					switch (_td_options.startFrom) {
 					case 'hr':
@@ -518,6 +568,17 @@
 				_td_stop = function () {
 					if (!_td_container.hasClass('td-show'))
 						return;
+
+					if (_td_now) {
+						clearInterval(_td_now);
+						_td_now = null;
+						_td_tags_medirian_now.addClass('td-on');
+					}
+					
+					if (_td_shake) {
+						clearInterval(_td_shake);
+						_td_shake = null;
+					}
 
 					_td_input.trigger('TDEx-hide', {
 						visible : true
@@ -576,13 +637,21 @@
 					isDailing : function () {
 						return _td_dailing;
 					},
-					setTime : function (str) {
-						var t = _td_parseTime(str);
-						if (t) {
-							_td_resetclock(t);
+					setTime : function (time) {
+						if (typeof time == 'string') {
+							var t = _td_parseTime(time);
+							if (t) {
+								_td_resetclock(t);
+								_td_select(null);
+							}
+							return t;
+						} else if (time instanceof Date || time === null) {
+							_td_resetclock(time);
 							_td_select(null);
+							return time;
+						} else {
+							throw new Error("Unrecognized time object - " + time);
 						}
-						return t;
 					},
 					destroy : function () {
 						_td_input.trigger('TDEx-destroy', {});
@@ -590,7 +659,8 @@
 						_td_tags_time_spans.off('click', _td_event_click_select);
 						_td_container.off('click', _td_event_click_deselect);
 						if (_td_options.meridians) {
-							_td_tags_medirian_spans.off('click', _td_event_click_meridians);
+							_td_tags_medirian_spans.off('click', _td_event_click_meridian_ampm);
+							_td_tags_medirian_spans.off('click', _td_event_click_meridian_now);
 						}
 						if (_td_options.dropTrigger) {
 							_td_input.off('click', _td_event_click_drop);

@@ -3,15 +3,21 @@
 <head>
 	<meta charset="UTF-8">
 	<title>TimeDropper</title>
-	<link rel="stylesheet" type="text/css" href="https://bootswatch.com/slate/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="timedropper.css">
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
 	<script type="text/javascript" src="timedropper.js"></script>
+	<style type="text/css">
+	button { color: black !important; }
+	</style>
 </head>
 <body style="padding:1em">
 	<div style="margin-bottom:1em"><h1 style="display:inline">TimeDropper-Ex<h4 style="display:inline">
 		<a href="https://github.com/Adam5Wu/TimeDropper-Ex">[Repository]</a>
 	</h4></h1></div>
+	<div style="margin:1em 0">
+		<button id="add-slate">Use Slate Color Theme</button>
+		<button id="remove-slate">Remove Slate Color Theme</button>
+	</div>
 	<div style="display:inline-block">No drop, two way entry<br>
 	<input type="text" id="clock1" />
 	</div>
@@ -23,6 +29,14 @@
 	</div>
 	
 	<script>
+	$('#add-slate').click(function () {
+		$('head').append('<link rel="stylesheet" type="text/css" href="https://bootswatch.com/slate/bootstrap.min.css">');
+		$('head').append('<link rel="stylesheet" type="text/css" href="timedropper.slate.delta.css" />');
+	});
+	$('#remove-slate').click(function () {
+		$('link[rel=stylesheet][href*="slate"]').remove();
+	});
+
 	$("#clock1").timeDropper({
 		animation: 'fade',
 		dropTrigger: false,
