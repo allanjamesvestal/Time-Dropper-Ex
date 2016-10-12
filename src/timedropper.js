@@ -579,15 +579,11 @@
 						_td_now = null;
 						_td_tags_medirian_now.addClass('td-on');
 					}
-					
+
 					if (_td_shake) {
 						clearInterval(_td_shake);
 						_td_shake = null;
 					}
-
-					_td_input.trigger('TDEx-hide', {
-						visible : true
-					});
 
 					if (!_td_options.visualContainer) {
 						$(window).off('resize', _td_event_resize);
@@ -595,27 +591,32 @@
 					setTimeout(function () {
 						_td_select(null);
 						_td_container.removeClass('td-show')
-						_td_input.trigger('TDEx-hide', {
-							visible : false
-						});
+						_td_input.trigger('TDEx-hide', {});
 					}, 700);
 					_td_container
 					.addClass('td-' + _td_options.animation + 'out')
 					.removeClass('td-' + _td_options.animation + 'in');
 				};
 
-				var _td_event_click_drop = function (e) {
-					if (!_td_container.hasClass('td-show')) {
-						_td_start();
-					} else {
+				var
+				_td_click_contained = function (evt, selfObj) {
+					return (selfObj.contains(evt.target) || evt.target == selfObj ||
+						(selfObj.childNodes != undefined && $.inArray(evt.target, selfObj.childNodes) >= 0));
+				},
+				_td_event_click_drop = function (e) {
+					_td_start();
+				},
+				_td_event_click_undrop = function (e) {
+					if (!_td_click_contained(e, _td_input[0]) && !_td_click_contained(e, _td_container[0])) {
 						_td_stop();
 					}
 				};
 				if (_td_options.dropTrigger) {
 					_td_input.on('click', _td_event_click_drop);
+					$(document).on('click', _td_event_click_undrop);
 				}
-				_td_input.addClass('td-input');
 
+				_td_input.addClass('td-input');
 				_td_input.data('TDEx', {
 					show : _td_start.bind(this),
 					hide : _td_stop.bind(this),
@@ -675,6 +676,10 @@
 							_td_container.off('mousewheel', _td_event_wheel);
 						}
 						_td_container.remove();
+
+						if (_td_options.dropTrigger) {
+							$(document).off('click', _td_event_click_undrop);
+						}
 					}
 				});
 
