@@ -1,0 +1,48 @@
+{
+	"name" : "timedropper-ex",
+	"description" : "TimeDropper-Ex is a jQuery plugin for fast visual and interactive time entry.",
+	"version" : "1.3.0",
+	"license" : "MIT",
+	"keywords" : [
+		"jquery",
+		"time",
+		"picker",
+		"timedropper",
+		"timepicker"
+	],
+	"repository" : {
+		"type" : "git",
+		"url" : "git://github.com/Adam5Wu/TimeDropper-Ex.git"
+	},
+	"bugs" : {
+		"url" : "https://github.com/Adam5Wu/TimeDropper-Ex/issues"
+	},
+	"homepage" : "https://adam5wu.github.io/TimeDropper-Ex/",
+	"maintainers" : [
+		"Zhenyu Wu <Adam_5Wu@hotmail.com>"
+	],
+	"scripts" : {
+		"test" : "echo \"Error: no test specified\" && exit 1"
+	},
+	"engines" : {
+		"node" : "0.12.x",
+		"npm" : "~3.9.2"
+	},
+	"author" : "Felice Gattuso",
+	"contributors" : [
+		"Zhenyu Wu <Adam_5Wu@hotmail.com>"
+	],
+	"dependencies" : {
+		"jquery" : ">=1.7.0"
+	},
+	"devDependencies" : {
+		"del" : "^2.2.0",
+		"gulp" : "~3.9.1",
+		"gulp-header" : "^1.7.1",
+		"gulp-minify-css" : "^1.2.4",
+		"gulp-rename" : "^1.2.2",
+		"gulp-uglify" : "^1.5.3",
+		"gulp-util" : "~3.0.7"
+	},
+	"optionalDependencies" : {}
+}
