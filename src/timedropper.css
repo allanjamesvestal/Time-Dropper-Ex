@@ -41,6 +41,7 @@
 	width: 20px;
 	height: 20px;
 	transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
 	background: white;
 	border-left: 1px solid #1977CC;
 	border-top: 1px solid #1977CC;
@@ -172,8 +173,8 @@
 }
 .td-dail.active
 {
-	opacity: 0.8;
 	animation: td-pulse 4s ease-in-out infinite;
+	-webkit-animation: td-pulse 4s ease-in-out infinite;
 }
 .td-dail svg
 {
@@ -209,6 +210,7 @@
 	border-bottom-left-radius: 0;
 	content: "";
 	transform: rotate(-45deg);
+	-webkit-transform: rotate(-45deg);
 	z-index: -1;
 }
 .td-clock .td-time
@@ -236,6 +238,7 @@
 	color: #6AE;
 	text-shadow: 0 0 5px #ACF;
 	animation: td-blink 1.5s linear infinite;
+	-webkit-animation: td-blink 1.5s linear infinite;
 }
 .td-clock .td-time span.td-on:hover{
 	opacity: 1;
@@ -539,6 +542,11 @@
 }
 @-webkit-keyframes td-pulse
 {
+	0%,
+	100%
+	{
+		opacity: 0.8;
+	}
 	50%
 	{
 		opacity: 0.5;
@@ -546,6 +554,11 @@
 }
 @keyframes td-pulse
 { 
+	0%,
+	100%
+	{
+		opacity: 0.8;
+	}
 	50%
 	{
 		opacity: 0.5;
@@ -616,6 +629,7 @@
 .td-lancette div.td-tick.td-rotate-300
 {
 	transform: rotate(30deg);
+	-webkit-transform: rotate(30deg);
 }
 .td-lancette div.td-tick.td-rotate-60,
 .td-lancette div.td-tick.td-rotate-150,
@@ -623,6 +637,7 @@
 .td-lancette div.td-tick.td-rotate-330
 {
 	transform: rotate(60deg);
+	-webkit-transform: rotate(60deg);
 }
 .td-lancette div.td-tick.td-rotate-0
 {
@@ -706,4 +721,5 @@
 {
 	background: #3C8;
 	animation: td-blink 1.5s linear infinite;
+	-webkit-animation: td-blink 1.5s linear infinite;
 }

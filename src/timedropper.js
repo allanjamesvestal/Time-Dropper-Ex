@@ -207,6 +207,8 @@
 
 					_td_tags_lancet_hr.css('transform', 'rotate(' + _td_h_deg + 'deg)');
 					_td_tags_lancet_min.css('transform', 'rotate(' + _td_m_deg + 'deg)');
+					_td_tags_lancet_hr.css('-webkit-transform', 'rotate(' + _td_h_deg + 'deg)');
+					_td_tags_lancet_min.css('-webkit-transform', 'rotate(' + _td_m_deg + 'deg)');
 
 					_td_tags_time_hr.attr('data-id', h).text(_td_num(_td_options.meridians ? (h > 12 ? h - 12 : h) : h));
 					_td_tags_time_min.attr('data-id', m).text(_td_num(m));
@@ -224,8 +226,10 @@
 					if (_td_selector) {
 						if (_td_selector.hasClass('td-hr')) {
 							_td_tags_dail.css('transform', 'rotate(' + _td_h_deg + 'deg)');
+							_td_tags_dail.css('-webkit-transform', 'rotate(' + _td_h_deg + 'deg)');
 						} else {
 							_td_tags_dail.css('transform', 'rotate(' + _td_m_deg + 'deg)');
+							_td_tags_dail.css('-webkit-transform', 'rotate(' + _td_m_deg + 'deg)');
 						}
 					}
 
@@ -310,6 +314,7 @@
 						_td_tags_dail.addClass('active');
 
 						_td_tags_dail.css('transform', 'rotate(' + _td_select_deg + 'deg)');
+						_td_tags_dail.css('-webkit-transform', 'rotate(' + _td_select_deg + 'deg)');
 					} else {
 						_td_tags_hr.removeClass('td-on');
 						_td_tags_min.removeClass('td-on');

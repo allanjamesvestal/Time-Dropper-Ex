@@ -11,10 +11,12 @@ It incoporated [patches from many peer forks](https://github.com/Adam5Wu/TimeDro
 It improves visual and interactive control experiences, and is slightly more modularized for use without input control.
 
 Confirmed working with:
-- Google Chrome 53
-- Mozilla Firefox 47
+- Google Chrome 40+
+- Mozilla Firefox 30+
 - Microsoft Edge
-	- Does NOT work with Microsoft Internet Explorer
+- Microsoft Internet Explorer 10+
+- Opera 25+
+- Safari 5+
 
 [Usage and Examples](https://adam5wu.github.io/TimeDropper-Ex/)
 
