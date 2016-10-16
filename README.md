@@ -21,8 +21,8 @@ This project is released under MIT LICENSE
 
 ### Setup for development
 * Install node.js
-** [Ubuntu/Mac](https://github.com/creationix/nvm)
-** [Windows](https://nodejs.org/en/download/)
+	* [Ubuntu/Mac](https://github.com/creationix/nvm)
+	* [Windows](https://nodejs.org/en/download/)
 * Update npm to latest version
 	```
 	npm install -g npm
