@@ -19,7 +19,7 @@
 		"./src/timedropper.lang.js"
 		"./src/timedropper.css",
 		"./src/timedropper.slate.css",
-		"./src/timedropper.slate.delta.css",
+		"./src/timedropper.slate.delta.css"
 	],
 	"moduleType" : [
 		"amd",
