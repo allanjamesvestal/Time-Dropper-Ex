@@ -15,8 +15,8 @@
 		"timedropper"
 	],
 	"main" : [
-		"./src/timedropper.js"
-		"./src/timedropper.lang.js"
+		"./src/timedropper.js",
+		"./src/timedropper.lang.js",
 		"./src/timedropper.css",
 		"./src/timedropper.slate.css",
 		"./src/timedropper.slate.delta.css"
