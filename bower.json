@@ -1,6 +1,6 @@
 {
 	"name" : "timedropper-ex",
-	"version" : "1.3.1",
+	"version" : "1.4.0",
 	"authors" : [
 		"Felice Gattuso",
 		"Zhenyu Wu <Adam_5Wu@hotmail.com>"
@@ -11,12 +11,14 @@
 		"jquery",
 		"time",
 		"picker",
-		"timedropper",
-		"timepicker"
+		"timepicker",
+		"timedropper"
 	],
 	"main" : [
 		"./src/timedropper.js"
+		"./src/timedropper.lang.js"
 		"./src/timedropper.css",
+		"./src/timedropper.slate.css",
 		"./src/timedropper.slate.delta.css",
 	],
 	"moduleType" : [
@@ -29,16 +31,12 @@
 		"url" : "git://github.com/Adam5Wu/TimeDropper-Ex.git"
 	},
 	"ignore" : [
-		"**/.*",
 		"node_modules",
 		"bower_components",
-		"test",
-		"tests",
-		"preview.jpg",
-		"CHANGELOG.md",
 		"gulpfile.js"
 	],
 	"dependencies" : {
-		"jquery" : ">=1.7.0"
+		"jquery" : ">=1.7.0",
+		"moment" : ">=2.9.0"
 	}
 }

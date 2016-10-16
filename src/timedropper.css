@@ -1,6 +1,6 @@
-.td-input
-{
-	cursor: pointer;
+body {
+	position: relative;
+	margin: 0;
 }
 .td-clock
 {
@@ -11,7 +11,7 @@
 	text-align: center;
 	line-height: 156px;
 	position: absolute;
-	font-family: sans-serif;
+	font-family: Arial, sans-serif;
 	outline: none;
 	
 	display: none;
@@ -47,6 +47,13 @@
 	border-top: 1px solid #1977CC;
 	border-top-left-radius: 4px;
 }
+.td-clock.drop-up:before
+{
+	transform: rotate(225deg);
+	-webkit-transform: rotate(225deg);
+	top: auto;
+	bottom: -10px;
+}
 .td-clock.nodrop:before
 {
 	display: none;
@@ -54,6 +61,11 @@
 .td-clock.td-show
 {
 	display: block;
+}
+.td-clock.inline
+{
+	position: relative;
+	margin: 8px;
 }
 .td-clock,
 .td-clock *
@@ -490,8 +502,15 @@
 {
 	-webkit-animation: td-dropin 0.3s linear;
 	animation: td-dropin 0.3s linear;
-	-webkit-transform-origin: 50% ;
+	-webkit-transform-origin: 50% 0;
 	transform-origin: 50% 0;
+}
+.td-dropin.drop-up
+{
+	-webkit-animation: td-dropin 0.3s linear;
+	animation: td-dropin 0.3s linear;
+	-webkit-transform-origin: 50% 100%;
+	transform-origin: 50% 100%;
 }
 @-webkit-keyframes td-dropout
 {
@@ -523,6 +542,39 @@
 {
 	-webkit-animation: td-dropout .3s forwards;
 	animation: td-dropout .3s forwards;
+	-webkit-transform-origin: 50% 50%;
+	transform-origin: 50% 50%;
+}
+@-webkit-keyframes td-dropout-up
+{
+	0%
+	{
+		opacity: 1;
+		-webkit-transform: none;
+	}
+	100%
+	{
+		opacity: 0;
+		-webkit-transform: perspective(200px) rotateX(45deg) translate3d(0,-32px,-48px);
+	}
+}
+@keyframes td-dropout-up
+{
+	0%
+	{
+		opacity: 1;
+		transform: none;
+	}
+	100%
+	{
+		opacity: 0;
+		transform: perspective(200px) rotateX(45deg) translate3d(0,-32px,-48px);
+	}
+}
+.td-dropout.drop-up
+{
+	-webkit-animation: td-dropout-up .3s forwards;
+	animation: td-dropout-up .3s forwards;
 	-webkit-transform-origin: 50% 50%;
 	transform-origin: 50% 50%;
 }
