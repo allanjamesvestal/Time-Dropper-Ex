@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 	<head>
-		<meta charset="UTF-8">
+		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=10,chrome=1">
 		<title>TimeDropper-Ex</title>
-		<link rel="stylesheet" type="text/css" href="src/timedropper.css">
+		<!--link rel="stylesheet" type="text/css" href="https://bootswatch.com/slate/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="src/timedropper.slate.css" /-->
+		<link rel="stylesheet" type="text/css" href="src/timedropper.css" />
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script>
 		<script type="text/javascript" src="src/timedropper.js"></script>
@@ -12,13 +14,20 @@
 		<style type="text/css">
 		#wrapper
 		{
-			padding:1em;
+			max-width:800px;
+			margin:0 auto;
             font-family:Tahoma,Verdana,sans-serif;
 			line-height:1.5;
 			font-size:14px;
 		}
 		.demo { margin:30px 20px 0 0; }
 		button { color:black !important; }
+		pre
+		{
+			font-size:12px;
+			background:#eee;
+			padding:0.5em;
+		}
 		</style>
 	</head>
 	<body>
@@ -34,28 +43,38 @@
 				<a href="http://jquery.com/" target=_blank>jQuery</a> 1.7.0+ (MIT LICENSE),
 				<a href="http://momentjs.com/" target=_blank>MomentJS</a> 2.9.0+ (MIT LICENSE)
 			</p>
+			Compatible Browsers:
+			<ul>
+				<li>Google Chrome 40+
+				<li>Mozilla Firefox 30+
+				<li>Microsoft Edge
+				<li>Microsoft Internet Explorer 10+
+				<li>Opera 25+
+				<li>Safari 5+
+			</ul>
 			<p>
-				Compatible Browsers:
-				<ul>
-					<li>Google Chrome 40+
-					<li>Mozilla Firefox 30+
-					<li>Microsoft Edge
-					<li>Microsoft Internet Explorer 10+
-					<li>Opera 25+
-					<li>Safari 5+
-				</ul>
+				Supports multi-language, you can choose a pre-defined language or set it to auto-detect mode. <br>
+				You can also define new languages, refer to <a href="src/timedropper.lang.js">the "Slate" delta CSS</a> for example.
 			</p>
+			<p>
+				Easily customizeable colors and style to adopt to arbitrary theme. <br>
+				Refer to <a href="src/timedropper.slate.delta.css">the "Slate" delta CSS</a> for example.
+			</p>
+			<span style="padding:0.5em;border:1px solid grey;border-radius:1em">
+				Interested in interactive date (range) entry? Checkout <a href="https://adam5wu.github.io/DateRange-Picker-Ex/">DateRange-Picker-Ex</a>.
+			</span>
             <h2 id="installation">Installation</h2>
 <pre>
-&lt;link rel="stylesheet" type="text/css" href="dist/timedropper.min.css">
+&lt;link rel="stylesheet" type="text/css" href="dist/timedropper.min.css" />
 &lt;!-- Optional "Slate" color theme -->
-&lt;link rel="stylesheet" type="text/css" href="dist/timedropper.slate.delta.min.css">
-&lt;script type="text/javascript" src="moment.min.js">&lt;/script>
+&lt;link rel="stylesheet" type="text/css" href="dist/timedropper.slate.delta.min.css" />
 &lt;script type="text/javascript" src="jquery.min.js">&lt;/script>
+&lt;script type="text/javascript" src="moment.min.js">&lt;/script>
 &lt;script type="text/javascript" src="dist/timedropper.min.js">&lt;/script>
+&lt;script type="text/javascript" src="dist/timedropper.lang.min.js">&lt;/script>
 </pre>
             <h2 id="demonstrations">Demonstrations</h2>
-			<div class="demo">
+			<div>
 				<button id="add-slate">Use Slate Color Theme</button>
 				<button id="remove-slate">Remove Slate Color Theme</button>
 			</div>
