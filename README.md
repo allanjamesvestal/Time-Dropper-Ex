@@ -16,7 +16,7 @@ New features:
 	- Localized time formatting, based on MomentJS
 - Modularized for use with or without input control
 	- Fully support event driven inter-operations with other components
-		E.g. Interactive date (range) entry widget, [DateRange-Picker-Ex](https://github.com/Adam5Wu/DateRange-Picker-Ex)
+		- For interactive date (range) entry, please try [DateRange-Picker-Ex](https://github.com/Adam5Wu/DateRange-Picker-Ex)
 
 ## [Documentation & Demo](https://adam5wu.github.io/TimeDropper-Ex/)
 
