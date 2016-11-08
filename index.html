@@ -81,16 +81,16 @@
 				<button id="add-slate">Use Slate Color Theme</button>
 				<button id="remove-slate">Remove Slate Color Theme</button>
 			</div>
-			<div class="demo" style="display:inline-block">
+			<div class="demo" style="display:inline-block;vertical-align:top">
 			Inline, input reactive<br>
 			<input type="text" id="clock1" />
-			<div id="loc-clock1" style="border:1px dashed darkgray"></div>
+			<div id="loc-clock1" style="border:1px dashed darkgray;line-height:0"></div>
 			</div>
-			<div class="demo" style="display:inline-block">
+			<div class="demo" style="display:inline-block;vertical-align:top">
 			Fade, English, from 10:10 AM<br>
 			<input type="text" id="clock2" readonly />
 			</div>
-			<div class="demo" style="display:inline-block">
+			<div class="demo" style="display:inline-block;vertical-align:top">
 			Auto start (drop), follow time<br>
 			<input type="text" id="clock3" readonly />
 			</div>
@@ -105,6 +105,7 @@ $('#remove-slate').click(function () {
 });
 $("#clock1").timeDropper({
 	animation: 'fade',
+	inline: true,
 	container: $('#loc-clock1'),
 	dropTrigger: false,
 	alwaysOpen: true
