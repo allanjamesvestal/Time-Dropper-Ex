@@ -17,6 +17,7 @@ New features:
 - Modularized for use with or without input control
 	- Fully support event driven inter-operations with other components
 		- For interactive date (range) entry, please try [DateRange-Picker-Ex](https://github.com/Adam5Wu/DateRange-Picker-Ex)
+		- For comprehensive datetime range entry, please try [DateTimeRanger](https://github.com/Adam5Wu/DateTimeRanger)
 
 ## [Documentation & Demo](https://adam5wu.github.io/TimeDropper-Ex/)
 

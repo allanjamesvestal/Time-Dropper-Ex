@@ -64,6 +64,7 @@ body {
 }
 .td-clock.inline
 {
+	display: inline-block;
 	position: relative;
 	margin: 8px;
 }

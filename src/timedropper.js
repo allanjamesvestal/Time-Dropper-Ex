@@ -17,95 +17,101 @@
 	(function ($) {
 		'use strict';
 		$.TDExLang = $.extend({
-				'default' : 'en',
-				'en' : {
-					'am' : 'AM',
-					'pm' : 'PM',
-					'reset' : 'Reset'
+				'default': 'en',
+				'en': {
+					'am': 'AM',
+					'pm': 'PM',
+					'reset': 'Reset'
 				}
 			}, $.TDExLang);
 
 		$.fn.timeDropper = function (opt) {
 			opt = $.extend({
-					autoStart : false,
-					alwaysOpen : false,
-					dropTrigger : true,
-					watchValueChange : true,
-					format : 'hh:mm A',
-					language : undefined,
-					fetchTime : function () {
+					inline: false,
+					autoStart: false,
+					alwaysOpen: false,
+					dropTrigger: true,
+					watchValueChange: true,
+					format: 'hh:mm A',
+					language: undefined,
+					fetchTime: function () {
 						return $(this).val();
 					},
-					putTime : function (s) {
+					putTime: function (s) {
 						if (s != $(this).val())
 							$(this).val(s).change();
 					},
-					autoSwitch : true,
-					meridians : true,
-					mousewheel : true,
-					animation : "drop",
-					showLancets : true,
-					container : undefined,
-					startFrom : "hr",
-					handleShake : false,
-					stickyMinute : 20,
-					stickyHour : 8 * 60
+					autoSwitch: true,
+					meridians: true,
+					mousewheel: true,
+					showLancets: true,
+					animation: "drop",
+					container: undefined,
+					startFrom: "hr",
+					handleShake: false,
+					stickyMinute: 20,
+					stickyHour: 8 * 60
 				}, opt);
 
+			if (opt.alwaysOpen) {
+				opt.autoStart = true;
+				opt.dropTrigger = false;
+			}
+
 			var state = {
-				anchor : $(this),
-				wrapper : undefined,
-				el : {},
+				anchor: $(this),
+				wrapper: undefined,
+				el: {},
 
-				locale : 'default',
-				localizer : {},
-				fblocalizer : {},
-				formatter : moment(),
-				monthFormat : '??',
+				locale: 'default',
+				localizer: {},
+				fblocalizer: {},
+				formatter: moment(),
+				monthFormat: '??',
 
-				dailing : false,
-				handleShake : null,
-				followTime : null,
-				dailDelay : null,
+				dailing: false,
+				handleShake: null,
+				followTime: null,
+				dailDelay: null,
 
-				selector : null,
-				time : 0,
-				h_deg : 0,
-				m_deg : 0,
-				pm : false,
-				select_deg : 0,
+				selector: null,
+				time: 0,
+				h_deg: 0,
+				m_deg: 0,
+				pm: false,
+				select_deg: 0,
 
-				init_deg : undefined,
-				rad2deg : 180 / Math.PI,
-				center : undefined,
+				init_deg: undefined,
+				rad2deg: 180 / Math.PI,
+				center: undefined,
 
-				active : false
+				active: false
 			};
 
 			// Public APIs
 			state.anchor.data('TDEx', {
-				show : function (t) {
+				show: function (t) {
 					statusCheck();
 					return start(t);
 				},
-				hide : function () {
+				hide: function () {
 					statusCheck();
 					return stop();
 				},
-				select : function (sel) {
+				select: function (sel) {
 					statusCheck(true);
 					switch (sel) {
 					case 'hr':
-						select(state.el.time_hr);
+						dailSelector(state.el.time_hr);
 						break;
 					case 'min':
-						select(state.el.time_min);
+						dailSelector(state.el.time_min);
 						break;
 					default:
-						select(null);
+						dailSelector(null);
 					}
 				},
-				getTime : function () {
+				getTime: function () {
 					statusCheck(true);
 					var
 					h = Math.floor(state.time / 3600),
@@ -113,59 +119,53 @@
 					m = Math.floor(hs / 60);
 					return [state.time, formatTime(h, m, hs % 60)];
 				},
-				isActive : function () {
+				isActive: function () {
 					statusCheck();
 					return state.active;
 				},
-				isDailing : function () {
+				isDailing: function () {
 					statusCheck();
 					return state.dailing;
 				},
-				setTime : function (time) {
+				setTime: function (time) {
 					resetClock(time);
-					select(null);
+					dailSelector(null);
 					return time;
 				},
-				setTimeText : function (time) {
+				setTimeText: function (time) {
 					statusCheck(true);
 
 					var t = parseStringTime(time);
 					return t ? setClock(t) : t;
 				},
-				wrapper : function () {
+				wrapper: function () {
 					statusCheck(true);
 					return state.wrapper;
 				},
-				anchor : function () {
+				anchor: function () {
 					statusCheck();
 					return state.anchor;
 				},
-				destroy : function () {
+				destroy: function () {
 					statusCheck();
 
 					state.anchor.trigger('TDEx-destroy', {});
 
-					if (state.wrapper)
-						state.wrapper.remove();
-					state.wrapper = null;
-
 					state.anchor.off('click', event_clickDrop);
 					state.anchor.data('TDEx', undefined);
 
-					state.wrapper.off('click', event_clickDeselect);
-					state.wrapper.off('mousewheel', event_wheel);
-					state.el.medirian_spans.off('click', event_clickMeridianAMPM);
-					state.el.medirian_spans.off('click', event_clickMeridianReset);
-					state.el.time_spans.off('click', event_clickSelect);
-					state.el.dail_rail.off('touchstart mousedown', event_startRail);
-
+					if (state.wrapper)
+						state.wrapper.remove();
+					state.wrapper = null;
+					
 					$(document).off('click', event_clickUndrop);
+					$(document).off('click', event_clickNoDailSelector);
 				}
 			});
 
 			if (opt.dropTrigger)
 				state.anchor.on('click', event_clickDrop);
-			if (opt.alwaysOpen || opt.autoStart)
+			if (opt.autoStart)
 				setTimeout(start.bind(this), 0);
 			return this;
 
@@ -206,23 +206,23 @@
 				state.wrapper = createDom($('.td-clock').length);
 				(opt.container || $('body')).append(state.wrapper);
 
-				state.el['lancet'] = state.wrapper.find('.td-lancette'),
-				state.el['lancet_ptr'] = state.wrapper.find('.td-pointer'),
-				state.el['lancet_hr'] = state.el.lancet.find('.td-hr'),
-				state.el['lancet_min'] = state.el.lancet.find('.td-min'),
-				state.el['hr'] = state.wrapper.find('.td-hr'),
-				state.el['min'] = state.wrapper.find('.td-min'),
-				state.el['dail'] = state.wrapper.find('.td-dail'),
-				state.el['dail_handle'] = state.el.dail.find('.td-handle'),
-				state.el['dail_rail'] = state.el.dail.find('svg'),
-				state.el['medirian'] = state.wrapper.find('.td-medirian'),
-				state.el['medirian_spans'] = state.el.medirian.find('span'),
-				state.el['medirian_am'] = state.el.medirian.find('.td-am'),
-				state.el['medirian_pm'] = state.el.medirian.find('.td-pm'),
-				state.el['medirian_now'] = state.el.medirian.find('.td-now'),
-				state.el['time'] = state.wrapper.find('.td-time'),
-				state.el['time_spans'] = state.el.time.find('span'),
-				state.el['time_hr'] = state.el.time.find('.td-hr'),
+				state.el['lancet'] = state.wrapper.find('.td-lancette');
+				state.el['lancet_ptr'] = state.wrapper.find('.td-pointer');
+				state.el['lancet_hr'] = state.el.lancet.find('.td-hr');
+				state.el['lancet_min'] = state.el.lancet.find('.td-min');
+				state.el['hr'] = state.wrapper.find('.td-hr');
+				state.el['min'] = state.wrapper.find('.td-min');
+				state.el['dail'] = state.wrapper.find('.td-dail');
+				state.el['dail_handle'] = state.el.dail.find('.td-handle');
+				state.el['dail_rail'] = state.el.dail.find('svg');
+				state.el['medirian'] = state.wrapper.find('.td-medirian');
+				state.el['medirian_spans'] = state.el.medirian.find('span');
+				state.el['medirian_am'] = state.el.medirian.find('.td-am');
+				state.el['medirian_pm'] = state.el.medirian.find('.td-pm');
+				state.el['medirian_now'] = state.el.medirian.find('.td-now');
+				state.el['time'] = state.wrapper.find('.td-time');
+				state.el['time_spans'] = state.el.time.find('span');
+				state.el['time_hr'] = state.el.time.find('.td-hr');
 				state.el['time_min'] = state.el.time.find('.td-min');
 
 				if (!opt.showLancets)
@@ -237,8 +237,9 @@
 					return false;
 				});
 
-				state.el.time_spans.on('click', event_clickSelect);
-				state.wrapper.on('click', event_clickDeselect);
+				state.el.time_spans.on('click', event_clickDailSelector);
+				if (!opt.alwaysOpen)
+					state.wrapper.on('click', event_clickNoDailSelector);
 				if (opt.meridians) {
 					state.el.medirian_am.on('click', event_clickMeridianAMPM);
 					state.el.medirian_pm.on('click', event_clickMeridianAMPM);
@@ -281,7 +282,7 @@
 				var val = (str && str.constructor == String) ? str.trim() : undefined;
 				if (val) {
 					var parsed = moment(val, opt.format, state.formatter.locale(), true);
-					val = parsed.isValid() ? parsed.toDate() : undefined;
+					val = parsed.isValid() ? parsed.utc().toDate() : undefined;
 				}
 				return val;
 			}
@@ -339,10 +340,10 @@
 					var strtime = formatTime(h, m, hs % 60);
 					opt.putTime.call(state.anchor[0], strtime);
 					state.anchor.trigger('TDEx-update', {
-						dailing : state.dailing,
-						selector : state.selector ? (state.selector.hasClass('td-hr') ? 'hr' : 'min') : null,
-						now : isNow,
-						time : [state.time, strtime]
+						dailing: state.dailing,
+						selector: state.selector ? (state.selector.hasClass('td-hr') ? 'hr' : 'min') : null,
+						now: isNow,
+						time: [state.time, strtime]
 					});
 				}
 
@@ -401,7 +402,7 @@
 				setClock(state.time - pt + newt + epochhs);
 			}
 
-			function select(comp) {
+			function dailSelector(comp) {
 				state.selector = comp;
 				if (state.selector) {
 					if (state.selector.hasClass('td-hr')) {
@@ -425,44 +426,45 @@
 				}
 
 				state.anchor.trigger('TDEx-selector', {
-					selector : state.selector ? (state.selector.hasClass('td-hr') ? 'hr' : 'min') : null
+					selector: state.selector ? (state.selector.hasClass('td-hr') ? 'hr' : 'min') : null
 				});
 			}
 
-			function event_clickSelect(e) {
-				e.preventDefault();
-				e.stopPropagation();
+			function event_clickDailSelector(e) {
+				dailSelector($(this));
 
-				select($(this));
+				if (state.dailDelay)
+					clearTimeout(state.dailDelay);
+
+				state.dailDelay = setTimeout(function () {
+						state.dailDelay = null;
+					}, 100);
 			}
 
-			function event_clickDeselect(e) {
+			function event_clickNoDailSelector(e) {
 				if (state.dailDelay == null)
-					select(null);
+					dailSelector(null);
 			}
 
 			function event_clickMeridianAMPM(e) {
 				state.anchor.trigger('TDEx-meridian', {
-					clicked : state.pm ? 'am' : 'pm'
+					clicked: state.pm ? 'am' : 'pm'
 				});
 				setClock(state.pm ? state.time - 12 * 3600 : state.time + 12 * 3600);
 			}
 
 			function event_clickMeridianReset(e) {
 				state.anchor.trigger('TDEx-meridian', {
-					clicked : 'now'
+					clicked: 'now'
 				});
 				resetClock(null);
 			}
 
 			function event_startRail(e) {
 				if (state.selector) {
-					e.preventDefault();
-					e.stopPropagation();
-
 					state.anchor.trigger('TDEx-dailing', {
-						finish : false,
-						selector : (state.selector.hasClass('td-hr') ? 'hr' : 'min')
+						finish: false,
+						selector: (state.selector.hasClass('td-hr') ? 'hr' : 'min')
 					});
 
 					if (state.handleShake) {
@@ -478,8 +480,8 @@
 
 					var offset = state.wrapper.offset();
 					state.center = {
-						y : offset.top + state.wrapper.height() / 2,
-						x : offset.left + state.wrapper.width() / 2
+						y: offset.top + state.wrapper.height() / 2,
+						x: offset.left + state.wrapper.width() / 2
 					};
 
 					var
@@ -496,9 +498,6 @@
 			}
 
 			function event_moveRail(e) {
-				e.preventDefault();
-				e.stopPropagation();
-
 				var
 				move = (e.type == 'touchmove') ? e.originalEvent.touches[0] : e,
 				a = state.center.y - move.pageY,
@@ -522,16 +521,15 @@
 			}
 
 			function event_stopRail(e) {
-				e.preventDefault();
-				e.stopPropagation();
-
 				state.dailing = false;
+				if (state.dailDelay)
+					clearTimeout(state.dailDelay);
 				state.dailDelay = setTimeout(function () {
 						state.dailDelay = null;
 					}, 100);
 
 				if (opt.autoSwitch) {
-					select(state.selector.hasClass('td-hr') ? state.el.time_min : state.el.time_hr);
+					dailSelector(state.selector.hasClass('td-hr') ? state.el.time_min : state.el.time_hr);
 				}
 				state.el.dail.addClass('td-n');
 				state.el.dail_handle.addClass('td-bounce');
@@ -541,8 +539,8 @@
 				$(window).off('touchend mouseup', event_stopRail);
 
 				state.anchor.trigger('TDEx-dailing', {
-					finish : true,
-					selector : (state.selector.hasClass('td-hr') ? 'hr' : 'min')
+					finish: true,
+					selector: (state.selector.hasClass('td-hr') ? 'hr' : 'min')
 				});
 			}
 
@@ -575,14 +573,14 @@
 
 			function resetClock(t) {
 				var newt;
-				if (t) {
+				if (t || t === 0) {
 					if (state.followTime) {
 						clearInterval(state.followTime);
 						state.followTime = null;
 						state.el.medirian_now.addClass('td-on');
 					}
 
-					newt = t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds();
+					newt = t instanceof Date ? t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds() : t;
 				} else {
 					if (state.followTime)
 						return;
@@ -596,14 +594,13 @@
 
 					var now = new Date();
 					newt = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-
 				}
 
 				if (newt != state.time) {
 					state.el.lancet_ptr.addClass('td-n');
 					setClock(newt, state.followTime !== null);
 					state.anchor.trigger('TDEx-reset', {
-						sourceTime : t
+						sourceTime: t
 					});
 					setTimeout(function () {
 						state.el.lancet_ptr.removeClass('td-n');
@@ -623,8 +620,8 @@
 				containerO['right'] = containerO.left + containerW;
 				containerO['bottom'] = containerO.top + containerH;
 				var vpO = {
-					top : $(window).scrollTop(),
-					left : $(window).scrollLeft()
+					top: $(window).scrollTop(),
+					left: $(window).scrollLeft()
 				};
 				var vpW = $(window).width();
 				var vpH = $(window).height();
@@ -642,23 +639,23 @@
 				if (DropDown) {
 					var newTop = Math.max(anchorO.bottom, vpO.top);
 					state.wrapper.removeClass('drop-up').css({
-						top : newTop,
-						bottom : 'auto',
-						left : anchorCenter
+						top: newTop,
+						bottom: 'auto',
+						left: anchorCenter
 					});
 					VDist = newTop - anchorO.bottom;
 				} else {
 					var bodyH = $('body').outerHeight();
 					var newBotTop = Math.min(anchorO.top, vpO.bottom);
 					state.wrapper.addClass('drop-up').css({
-						top : 'auto',
-						bottom : bodyH - newBotTop,
-						left : anchorCenter
+						top: 'auto',
+						bottom: bodyH - newBotTop,
+						left: anchorCenter
 					});
 					VDist = anchorO.top - newBotTop;
 				}
 				state.wrapper.css({
-					opacity : 0.3 + 0.7 / Math.log2(2 + (VDist >> 7))
+					opacity: 0.3 + 0.7 / Math.log2(2 + (VDist >> 7))
 				});
 				return true;
 			}
@@ -675,8 +672,9 @@
 					state.active = true;
 
 					state.wrapper.addClass('td-show')
-					.removeClass('td-' + opt.animation + 'out')
-					.addClass('td-' + opt.animation + 'in');
+					.removeClass('td-' + opt.animation + 'out');
+					if (!opt.alwaysOpen)
+						state.wrapper.addClass('td-' + opt.animation + 'in');
 
 					if (opt.handleShake) {
 						state.handleShake = setInterval(function () {
@@ -691,10 +689,10 @@
 
 					switch (opt.startFrom) {
 					case 'hr':
-						select(state.el.time_hr);
+						dailSelector(state.el.time_hr);
 						break;
 					case 'min':
-						select(state.el.time_min);
+						dailSelector(state.el.time_min);
 						break;
 					}
 
@@ -706,8 +704,7 @@
 					if (opt.watchValueChange)
 						state.anchor.on('input', event_valueChange);
 
-					if (!opt.alwaysOpen)
-						$(document).on('click', event_clickUndrop);
+					$(document).on('click', opt.alwaysOpen ? event_clickNoDailSelector : event_clickUndrop);
 
 					state.anchor.trigger('TDEx-show', {});
 					return true;
@@ -738,11 +735,10 @@
 					if (opt.watchValueChange)
 						state.anchor.off('input', event_valueChange);
 
-					if (!opt.alwaysOpen)
-						$(document).off('click', event_clickUndrop);
+					$(document).off('click', event_clickUndrop);
 
 					setTimeout(function () {
-						select(null);
+						dailSelector(null);
 						state.wrapper.removeClass('td-show')
 						state.anchor.trigger('TDEx-hide', {});
 					}, 700);
@@ -799,140 +795,140 @@
 			function createDom(index) {
 				var html =
 					tagGen('div', {
-						'class' : ['td-clock',
-							(opt.container ? 'inline' : '')],
-						id : 'td-clock-' + index
+						'class': ['td-clock',
+							(opt.inline ? 'inline' : '')],
+						id: 'td-clock-' + index
 					})
 					 + tagGen('div', {
-						'class' : 'td-clock-wrap'
+						'class': 'td-clock-wrap'
 					})
 					 + tagGen('div', {
-						'class' : 'td-medirian'
+						'class': 'td-medirian'
 					}, tagGen('span', {
-							'class' : ['td-am', 'td-n2']
+							'class': ['td-am', 'td-n2']
 						}, localize('am')) + tagGen('span', {
-							'class' : ['td-pm', 'td-n2']
+							'class': ['td-pm', 'td-n2']
 						}, localize('pm')) + tagGen('span', {
-							'class' : ['td-now', 'td-n2', 'td-on']
+							'class': ['td-now', 'td-n2', 'td-on']
 						}, localize('reset')))
 					 + tagGen('div', {
-						'class' : 'td-lancette'
+						'class': 'td-lancette'
 					}, tagGen('div', {
-							'class' : ['td-tick', 'td-rotate-0']
+							'class': ['td-tick', 'td-rotate-0']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-tick', 'td-rotate-30']
+							'class': ['td-tick', 'td-rotate-30']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-tick', 'td-rotate-60']
+							'class': ['td-tick', 'td-rotate-60']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-tick', 'td-rotate-90']
+							'class': ['td-tick', 'td-rotate-90']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-tick', 'td-rotate-120']
+							'class': ['td-tick', 'td-rotate-120']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-tick', 'td-rotate-150']
+							'class': ['td-tick', 'td-rotate-150']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-tick', 'td-rotate-180']
+							'class': ['td-tick', 'td-rotate-180']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-tick', 'td-rotate-210']
+							'class': ['td-tick', 'td-rotate-210']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-tick', 'td-rotate-240']
+							'class': ['td-tick', 'td-rotate-240']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-tick', 'td-rotate-270']
+							'class': ['td-tick', 'td-rotate-270']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-tick', 'td-rotate-300']
+							'class': ['td-tick', 'td-rotate-300']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-tick', 'td-rotate-330']
+							'class': ['td-tick', 'td-rotate-330']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-pointer', 'td-hr']
+							'class': ['td-pointer', 'td-hr']
 						}, '')
 						 + tagGen('div', {
-							'class' : ['td-pointer', 'td-min']
+							'class': ['td-pointer', 'td-min']
 						}, ''))
 					 + tagGen('div', {
-						'class' : 'td-time'
+						'class': 'td-time'
 					}, tagGen('span', {
-							'class' : ['td-hr', 'td-n2']
+							'class': ['td-hr', 'td-n2']
 						}, '')
 						 + ':' + tagGen('span', {
-							'class' : ['td-min', 'td-n2']
+							'class': ['td-min', 'td-n2']
 						}, ''))
 					 + tagGen('div', {
-						'class' : ['td-dail', 'td-n']
+						'class': ['td-dail', 'td-n']
 					})
 					 + tagGen('div', {
-						'class' : 'td-handle'
+						'class': 'td-handle'
 					}, tagGen('svg', {
-							xmlns : 'http://www.w3.org/2000/svg',
-							'xmlns:xlink' : 'http://www.w3.org/1999/xlink',
-							'xml:space' : 'preserve',
-							version : '1.1',
-							x : '0px',
-							y : '0px',
-							viewBox : '0 0 100 35.4',
-							'enable-background' : 'new 0 0 100 35.4'
+							xmlns: 'http://www.w3.org/2000/svg',
+							'xmlns:xlink': 'http://www.w3.org/1999/xlink',
+							'xml:space': 'preserve',
+							version: '1.1',
+							x: '0px',
+							y: '0px',
+							viewBox: '0 0 100 35.4',
+							'enable-background': 'new 0 0 100 35.4'
 						}, tagGen('g', {},
 								tagGen('path', {
-									fill : 'none',
-									'stroke-width' : 1.2,
-									'stroke-linecap' : 'round',
-									'stroke-linejoin' : 'round',
-									'stroke-miterlimit' : 10,
-									d : 'M98.1,33C85.4,21.5,68.5,14.5,50,14.5S14.6,21.5,1.9,33'
+									fill: 'none',
+									'stroke-width': 1.2,
+									'stroke-linecap': 'round',
+									'stroke-linejoin': 'round',
+									'stroke-miterlimit': 10,
+									d: 'M98.1,33C85.4,21.5,68.5,14.5,50,14.5S14.6,21.5,1.9,33'
 								}, '')
 								 + tagGen('line', {
-									fill : 'none',
-									'stroke-width' : 1.2,
-									'stroke-linecap' : 'round',
-									'stroke-linejoin' : 'round',
-									'stroke-miterlimit' : 10,
-									x1 : 1.9,
-									y1 : 33,
-									x2 : 1.9,
-									y2 : 28.6
+									fill: 'none',
+									'stroke-width': 1.2,
+									'stroke-linecap': 'round',
+									'stroke-linejoin': 'round',
+									'stroke-miterlimit': 10,
+									x1: 1.9,
+									y1: 33,
+									x2: 1.9,
+									y2: 28.6
 								}, '')
 								 + tagGen('line', {
-									fill : 'none',
-									'stroke-width' : 1.2,
-									'stroke-linecap' : 'round',
-									'stroke-linejoin' : 'round',
-									'stroke-miterlimit' : 10,
-									x1 : 1.9,
-									y1 : 33,
-									x2 : 6.3,
-									y2 : 33
+									fill: 'none',
+									'stroke-width': 1.2,
+									'stroke-linecap': 'round',
+									'stroke-linejoin': 'round',
+									'stroke-miterlimit': 10,
+									x1: 1.9,
+									y1: 33,
+									x2: 6.3,
+									y2: 33
 								}, '')
 								 + tagGen('line', {
-									fill : 'none',
-									'stroke-width' : 1.2,
-									'stroke-linecap' : 'round',
-									'stroke-linejoin' : 'round',
-									'stroke-miterlimit' : 10,
-									x1 : 98.1,
-									y1 : 33,
-									x2 : 93.7,
-									y2 : 33
+									fill: 'none',
+									'stroke-width': 1.2,
+									'stroke-linecap': 'round',
+									'stroke-linejoin': 'round',
+									'stroke-miterlimit': 10,
+									x1: 98.1,
+									y1: 33,
+									x2: 93.7,
+									y2: 33
 								}, '')
 								 + tagGen('line', {
-									fill : 'none',
-									'stroke-width' : 1.2,
-									'stroke-linecap' : 'round',
-									'stroke-linejoin' : 'round',
-									'stroke-miterlimit' : 10,
-									x1 : 98.1,
-									y1 : 33,
-									x2 : 98.1,
-									y2 : 28.6
+									fill: 'none',
+									'stroke-width': 1.2,
+									'stroke-linecap': 'round',
+									'stroke-linejoin': 'round',
+									'stroke-miterlimit': 10,
+									x1: 98.1,
+									y1: 33,
+									x2: 98.1,
+									y2: 28.6
 								}, ''))))
 					 + tagGen('/div')
 					 + tagGen('/div')
