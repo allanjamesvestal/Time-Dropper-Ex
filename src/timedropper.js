@@ -127,9 +127,10 @@
 					statusCheck();
 					return state.dailing;
 				},
-				setTime: function (time) {
+				setTime: function (time, keepSelector) {
 					resetClock(time);
-					dailSelector(null);
+					if (!keepSelector)
+						dailSelector(null);
 					return time;
 				},
 				setTimeText: function (time) {
@@ -157,7 +158,7 @@
 					if (state.wrapper)
 						state.wrapper.remove();
 					state.wrapper = null;
-					
+
 					$(document).off('click', event_clickUndrop);
 					$(document).off('click', event_clickNoDailSelector);
 				}
@@ -293,7 +294,16 @@
 			}
 
 			function setClock(t, isNow) {
-				if (state.time != t) {
+				var Update = state.time != t;
+
+				if (!isNow && state.followTime) {
+					clearInterval(state.followTime);
+					state.followTime = null;
+					state.el.medirian_now.addClass('td-on');
+					Update = true;
+				}
+
+				if (Update) {
 					state.time = t % (24 * 3600);
 					if (state.time < 0)
 						state.time += 24 * 3600;
@@ -345,12 +355,6 @@
 						now: isNow,
 						time: [state.time, strtime]
 					});
-				}
-
-				if (!isNow && state.followTime) {
-					clearInterval(state.followTime);
-					state.followTime = null;
-					state.el.medirian_now.addClass('td-on');
 				}
 			}
 
