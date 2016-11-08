@@ -1,5 +1,6 @@
 body {
 	position: relative;
+	margin: 0;
 }
 .td-clock
 {
@@ -40,6 +41,7 @@ body {
 	width: 20px;
 	height: 20px;
 	transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
 	background: #123;
 	border-left: 1px solid #0AF;
 	border-top: 1px solid #0AF;
@@ -62,6 +64,7 @@ body {
 }
 .td-clock.inline
 {
+	display: inline-block;
 	position: relative;
 	margin: 8px;
 }
@@ -185,6 +188,7 @@ body {
 {
 	opacity: 0.8;
 	animation: td-pulse 4s ease-in-out infinite;
+	-webkit-animation: td-pulse 4s ease-in-out infinite;
 }
 .td-dail svg
 {
@@ -192,6 +196,7 @@ body {
 	top: 0;
 	left: 0;
 	right: 0;
+	height: 32px;
 }
 .td-dail.active svg
 {
@@ -219,6 +224,7 @@ body {
 	border-bottom-left-radius: 0;
 	content: "";
 	transform: rotate(-45deg);
+	-webkit-transform: rotate(-45deg);
 	z-index: -1;
 }
 .td-clock .td-time
@@ -246,6 +252,7 @@ body {
 	color: #8CF;
 	text-shadow: 0 0 5px #257;
 	animation: td-blink 1.5s linear infinite;
+	-webkit-animation: td-blink 1.5s linear infinite;
 }
 .td-clock .td-time span.td-on:hover{
 	opacity: 1;
@@ -500,6 +507,13 @@ body {
 	-webkit-transform-origin: 50% ;
 	transform-origin: 50% 0;
 }
+.td-dropin.drop-up
+{
+	-webkit-animation: td-dropin 0.3s linear;
+	animation: td-dropin 0.3s linear;
+	-webkit-transform-origin: 50% 100%;
+	transform-origin: 50% 100%;
+}
 @-webkit-keyframes td-dropout
 {
 	0%
@@ -582,6 +596,11 @@ body {
 }
 @-webkit-keyframes td-pulse
 {
+	0%,
+	100%
+	{
+		opacity: 0.8;
+	}
 	50%
 	{
 		opacity: 0.5;
@@ -589,6 +608,11 @@ body {
 }
 @keyframes td-pulse
 { 
+	0%,
+	100%
+	{
+		opacity: 0.8;
+	}
 	50%
 	{
 		opacity: 0.5;
@@ -660,6 +684,7 @@ body {
 .td-lancette div.td-tick.td-rotate-300
 {
 	transform: rotate(30deg);
+	-webkit-transform: rotate(30deg);
 }
 .td-lancette div.td-tick.td-rotate-60,
 .td-lancette div.td-tick.td-rotate-150,
@@ -667,6 +692,7 @@ body {
 .td-lancette div.td-tick.td-rotate-330
 {
 	transform: rotate(60deg);
+	-webkit-transform: rotate(60deg);
 }
 .td-lancette div.td-tick.td-rotate-0
 {
@@ -750,4 +776,5 @@ body {
 {
 	background: #9FD;
 	animation: td-blink 1.5s linear infinite;
+	-webkit-animation: td-blink 1.5s linear infinite;
 }
