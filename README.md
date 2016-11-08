@@ -3,6 +3,8 @@
 [![GitHub forks](https://img.shields.io/github/forks/Adam5Wu/TimeDropper-Ex.svg)](https://github.com/Adam5Wu/TimeDropper-Ex/network)
 [![License](https://img.shields.io/github/license/Adam5Wu/TimeDropper-Ex.svg)](./LICENSE)
 [![Bower version](https://img.shields.io/bower/v/timedropper-ex.svg?maxAge=3600)](https://bower.io/search/)
+[![NPM version](https://img.shields.io/npm/v/timedropper-ex.svg?maxAge=3600)](https://www.npmjs.com/package/timedropper-ex)
+
 
 TimeDropper-Ex is a jQuery plugin for fast visual and interactive time entry.
 
