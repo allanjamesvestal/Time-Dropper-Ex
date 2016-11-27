@@ -466,6 +466,8 @@
 
 			function event_startRail(e) {
 				if (state.selector) {
+					e.preventDefault();
+
 					state.anchor.trigger('TDEx-dailing', {
 						finish: false,
 						selector: (state.selector.hasClass('td-hr') ? 'hr' : 'min')
@@ -502,6 +504,9 @@
 			}
 
 			function event_moveRail(e) {
+				// This prevent browser execute mouse drag or touch move action
+				e.preventDefault();
+
 				var
 				move = (e.type == 'touchmove') ? e.originalEvent.touches[0] : e,
 				a = state.center.y - move.pageY,
@@ -525,6 +530,8 @@
 			}
 
 			function event_stopRail(e) {
+				e.preventDefault();
+
 				state.dailing = false;
 				if (state.dailDelay)
 					clearTimeout(state.dailDelay);
