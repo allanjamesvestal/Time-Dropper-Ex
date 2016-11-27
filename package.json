@@ -1,7 +1,7 @@
 {
 	"name" : "timedropper-ex",
 	"description" : "TimeDropper-Ex is a jQuery plugin for fast visual and interactive time entry.",
-	"version" : "1.4.3",
+	"version" : "1.4.4",
 	"license" : "MIT",
 	"keywords" : [
 		"jquery",
