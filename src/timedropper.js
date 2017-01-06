@@ -325,7 +325,13 @@
 					state.el.lancet_hr.css('-webkit-transform', 'rotate(' + state.h_deg + 'deg)');
 					state.el.lancet_min.css('-webkit-transform', 'rotate(' + state.m_deg + 'deg)');
 
-					state.el.time_hr.attr('data-id', h).text(displayNumber(opt.meridians ? (h > 12 ? h - 12 : h) : h));
+					var adjustedH = (opt.meridians && h === 0) ? 12 : h;
+
+					state.el.time_hr.attr('data-id', adjustedH).text(
+						displayNumber(
+							opt.meridians ? (adjustedH > 12 ? adjustedH - 12 : adjustedH) : adjustedH
+						)
+					);
 					state.el.time_min.attr('data-id', m).text(displayNumber(m));
 
 					if (opt.meridians) {
