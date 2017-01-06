@@ -6,7 +6,8 @@
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
 		define(['jquery', 'moment'], factory);
-	} else if (typeof module === 'object' && module.exports) {
+	} else if (typeof exports === 'object' && typeof module !== 'undefined') {
+	// } else if (typeof module === 'object' && module.exports) {
 		// CommonJS. Register as a module
 		module.exports = factory(require('jquery'), require('moment'));
 	} else {
@@ -14,7 +15,7 @@
 		factory(jQuery, moment);
 	}
 }
-	(function ($) {
+	(function ($, moment) {
 		'use strict';
 		$.TDExLang = $.extend({
 				'default': 'en',
