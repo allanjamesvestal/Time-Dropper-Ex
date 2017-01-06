@@ -10,16 +10,18 @@
 		"timepicker",
 		"timedropper"
 	],
+	"main": "./dist/timedropper.min.js",
 	"repository" : {
 		"type" : "git",
-		"url" : "git://github.com/Adam5Wu/TimeDropper-Ex.git"
+		"url" : "git://github.com/allanjamesvestal/Time-Dropper-Ex.git"
 	},
 	"bugs" : {
-		"url" : "https://github.com/Adam5Wu/TimeDropper-Ex/issues"
+		"url" : "https://github.com/allanjamesvestal/TimeDropper-Ex/issues"
 	},
-	"homepage" : "https://adam5wu.github.io/TimeDropper-Ex/",
+	"homepage" : "https://allanjamesvestal.github.io/TimeDropper-Ex/",
 	"maintainers" : [
-		"Zhenyu Wu <Adam_5Wu@hotmail.com>"
+		"Zhenyu Wu <Adam_5Wu@hotmail.com>",
+		"Allan James Vestal <ajvestal@dallasnews.com>"
 	],
 	"scripts" : {
 		"test" : "echo \"Error: no test specified\" && exit 1"
@@ -30,7 +32,8 @@
 	},
 	"author" : "Felice Gattuso",
 	"contributors" : [
-		"Zhenyu Wu <Adam_5Wu@hotmail.com>"
+		"Zhenyu Wu <Adam_5Wu@hotmail.com>",
+		"Allan James Vestal <ajvestal@dallasnews.com>"
 	],
 	"dependencies" : {
 		"jquery" : ">=1.7.0",
