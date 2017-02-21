@@ -15,8 +15,11 @@
 		factory(jQuery, moment);
 	}
 }
-	(function ($, moment) {
+	(function (rawJQuery, moment) {
 		'use strict';
+
+		var $ = window.$ || window.jquery || rawJQuery;
+
 		$.TDExLang = $.extend({
 				'default': 'en',
 				'en': {
